@@ -1,11 +1,19 @@
 from maths import dot, sub
 import math
+from AbstractObject import AbstractObject
 
-class Sphere:
+
+class Sphere(AbstractObject):
     def __init__(self, center, radius, color):
+        super().__init__(color)
         self.center = center
         self.radius = radius
-        self.color = color  # (r,g,b)
+
+    def intersect(self, origin, direction):
+        return intersect_ray_sphere(origin, direction, self)
+    
+    def get_normal(self, point):
+        return sub(point, self.center)
 
 #O est le point de départ du rayon
 #D est la direction du rayon

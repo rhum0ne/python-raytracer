@@ -8,35 +8,38 @@ except ImportError:
 
 from camera import Camera
 from scene import Scene
-from sphere_utils import intersect_ray_sphere
+from AbstractObject import AbstractObject
 
 
-def trace_ray(O, D, t_min, t_max, spheres, lights, background=(255, 255, 255)):
+def trace_ray(O, D, t_min, t_max, objects, lights, background=(255, 255, 255)):
     """Trace un rayon et retourne la couleur."""
     closest_t = math.inf
     closest_color = None
-    closest_sphere = None
+    closest_object = None
 
-    for s in spheres:
-        intersection = intersect_ray_sphere(O, D, s)
+    for obj in objects:
+        intersection = obj.intersect(O, D)
 
         if t_min <= intersection <= t_max and intersection < closest_t:
             closest_t = intersection
-            closest_color = s.color
-            closest_sphere = s
+            closest_color = obj.color
+            closest_object = obj
 
     if(closest_color is None):
         return background
     
     intensity_total = (0, 0, 0)
     for l in lights:
+        point = (O[0] + D[0]*closest_t,
+                 O[1] + D[1]*closest_t,
+                 O[2] + D[2]*closest_t)
+        
         intensity = l.calcIntensityAtPoint(
-            point=(O[0] + D[0]*closest_t,
-                   O[1] + D[1]*closest_t,
-                   O[2] + D[2]*closest_t),
-            normal=(O[0] + D[0]*closest_t - closest_sphere.center[0],
-                    O[1] + D[1]*closest_t - closest_sphere.center[1],
-                    O[2] + D[2]*closest_t - closest_sphere.center[2])
+            point,
+            #normal=(O[0] + D[0]*closest_t - closest_object.center[0],
+            #        O[1] + D[1]*closest_t - closest_object.center[1],
+            #        O[2] + D[2]*closest_t - closest_object.center[2])
+            normal=closest_object.get_normal(point)
         )
         intensity_total = (
             intensity_total[0] + intensity[0],
@@ -114,7 +117,7 @@ class RaytracerApp:
                 color = trace_ray(
                     self.camera.pos, D, 
                     t_min=1.0, t_max=math.inf, 
-                    spheres=self.scene.spheres,
+                    objects=self.scene.objects,
                     lights=self.scene.lights
                 )
                 self.px[i, j] = color

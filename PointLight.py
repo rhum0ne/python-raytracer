@@ -1,12 +1,15 @@
 from maths import dot, length, sub, mul
+from AbstractLight import AbstractLight
 
-class PointLight:
+
+class PointLight(AbstractLight):
     def __init__(self, position, intensity):
+        super().__init__(intensity)
         self.position = position  # (x, y, z)
-        self.intensity = intensity  # (r, g, b) Car moi je veux de la couleur :D
-
 
     def calcIntensityAtPoint(self, point, normal):
+
+        #Ce sera peut être utile plus tard pour faire une atténuation
         #distances = (
         #    point[0] - self.position[0],
         #    point[1] - self.position[1],
