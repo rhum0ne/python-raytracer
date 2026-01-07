@@ -15,7 +15,7 @@ def mul(a, k: float):
 
 
 def normalize(v):
-    return numpy.normalize(v)
+    return mul(v, 1.0 / length(v))
 
 def length(v):
     return numpy.sqrt(dot(v, v))

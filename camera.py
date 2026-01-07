@@ -4,8 +4,8 @@ class Camera:
         self.Cw = canvas_width
         self.Ch = canvas_height
 
-        self.Vw = 1.0
-        self.Vh = 1.0
+        self.Vw = 3.0
+        self.Vh = 2.0
         self.d = 1.0 
         self.pos = (0.0, 0.0, 0.0)
 

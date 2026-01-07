@@ -5,14 +5,10 @@ try:
     from PIL import Image, ImageTk
 except ImportError:
     raise SystemExit("Pillow manquant. Installe-le avec: pip install pillow")
-from maths import mul
 from camera import Camera
 from scene import Scene
-from AbstractObject import AbstractObject
 
-
-def trace_ray(O, D, t_min, t_max, objects, lights, background=(255, 255, 255)):
-    """Trace un rayon et retourne la couleur."""
+def closest_intersection(O, D, t_min, t_max, objects):
     closest_t = math.inf
     closest_color = None
     closest_object = None
@@ -25,10 +21,18 @@ def trace_ray(O, D, t_min, t_max, objects, lights, background=(255, 255, 255)):
             closest_color = obj.color
             closest_object = obj
 
+    return closest_object, closest_t, closest_color
+
+def trace_ray(O, D, t_min, t_max, objects, lights, background=(255, 255, 255)):
+    """Trace un rayon et retourne la couleur."""
+    closest_object, closest_t, closest_color = closest_intersection(O, D, t_min, t_max, objects)
+
     if(closest_color is None):
         return background
     
-    intensity_total = (0, 0, 0)
+    intensity_r = 0.0
+    intensity_g = 0.0
+    intensity_b = 0.0
     for l in lights:
         point = (O[0] + D[0]*closest_t,
                  O[1] + D[1]*closest_t,
@@ -37,19 +41,17 @@ def trace_ray(O, D, t_min, t_max, objects, lights, background=(255, 255, 255)):
         intensity = l.calcIntensityAtPoint(
             point,
             normal=closest_object.get_normal(point),
-            ray=mul(D, -1),
+            ray=D, #mul(D, -1),
             specular=closest_object.specular
         )
-        intensity_total = (
-            intensity_total[0] + intensity[0],
-            intensity_total[1] + intensity[1],
-            intensity_total[2] + intensity[2]
-        )
+        intensity_r += intensity[0]
+        intensity_g += intensity[1]
+        intensity_b += intensity[2]
         
     closest_color = (
-            min(255, int(closest_color[0] * intensity_total[0])),
-            min(255, int(closest_color[1] * intensity_total[1])),
-            min(255, int(closest_color[2] * intensity_total[2]))
+            min(255, int(closest_color[0] * intensity_r)),
+            min(255, int(closest_color[1] * intensity_g)),
+            min(255, int(closest_color[2] * intensity_b))
         )
     return closest_color
 
