@@ -15,3 +15,6 @@ class DirLight(AbstractLight):
             intensity=self.intensity,
             specular=specular
         )
+    
+    def get_direction_from_point(self, point):
+        return self.direction

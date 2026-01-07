@@ -9,3 +9,6 @@ class AmbientLight(AbstractLight):
     
     def calcIntensityAtPoint(self, point, normal, ray, specular=-1):
         return self.intensity
+
+    def get_direction_from_point(self, point):
+        return None

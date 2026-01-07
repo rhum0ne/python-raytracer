@@ -23,13 +23,7 @@ def closest_intersection(O, D, t_min, t_max, objects):
 
     return closest_object, closest_t, closest_color
 
-def trace_ray(O, D, t_min, t_max, objects, lights, background=(255, 255, 255)):
-    """Trace un rayon et retourne la couleur."""
-    closest_object, closest_t, closest_color = closest_intersection(O, D, t_min, t_max, objects)
-
-    if(closest_color is None):
-        return background
-    
+def compute_lighting(O, D, closest_object, closest_t, lights, objects, t_max, t_min=0.001):
     intensity_r = 0.0
     intensity_g = 0.0
     intensity_b = 0.0
@@ -37,6 +31,19 @@ def trace_ray(O, D, t_min, t_max, objects, lights, background=(255, 255, 255)):
         point = (O[0] + D[0]*closest_t,
                  O[1] + D[1]*closest_t,
                  O[2] + D[2]*closest_t)
+        
+        #Shadow check
+        dir = l.get_direction_from_point(point)
+        if(dir is not None):
+            shadow_obj, shadow_t, _ = closest_intersection(
+                point,
+                dir,
+                t_min, t_max,
+                objects
+            )
+            if shadow_obj is not None:
+                continue
+
         
         intensity = l.calcIntensityAtPoint(
             point,
@@ -47,6 +54,17 @@ def trace_ray(O, D, t_min, t_max, objects, lights, background=(255, 255, 255)):
         intensity_r += intensity[0]
         intensity_g += intensity[1]
         intensity_b += intensity[2]
+
+    return (intensity_r, intensity_g, intensity_b)
+
+def trace_ray(O, D, t_min, t_max, objects, lights, background=(255, 255, 255)):
+    """Trace un rayon et retourne la couleur."""
+    closest_object, closest_t, closest_color = closest_intersection(O, D, t_min, t_max, objects)
+
+    if(closest_color is None):
+        return background
+    
+    intensity_r, intensity_g, intensity_b = compute_lighting(O, D, closest_object, closest_t, lights, objects, t_min, t_max)
         
     closest_color = (
             min(255, int(closest_color[0] * intensity_r)),

@@ -14,6 +14,5 @@ class Scene:
         ]
 
         self.lights = [
-            PointLight(position=(2.0, 2.0, 1.0), intensity=(0.6, 0.6, 0.6)),
-            PointLight(position=(0.0, 3.0, 2.0), intensity=(0.5, 0.5, 0.5)),
+            PointLight(position=(2.0, 1.0, 2.0), intensity=(0.7, 0.7, 0.7)),
         ]
