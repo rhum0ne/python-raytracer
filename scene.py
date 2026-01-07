@@ -15,4 +15,6 @@ class Scene:
 
         self.lights = [
             PointLight(position=(2.0, 1.0, 2.0), intensity=(0.7, 0.7, 0.7)),
+            DirLight(direction=(-1.0, -4.0, -4.0), intensity=(0.2, 0.2, 0.2)),
+            AmbientLight(intensity=(0.1, 0.1, 0.1))
         ]

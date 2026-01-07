@@ -35,10 +35,23 @@ def compute_lighting(O, D, closest_object, closest_t, lights, objects, t_max, t_
         #Shadow check
         dir = l.get_direction_from_point(point)
         if(dir is not None):
+            # Pour les lumières ponctuelles, limiter t_max à la distance de la lumière
+            from maths import length, normalize, add, mul
+            dir_length = length(dir)
+            dir_normalized = normalize(dir)
+            
+            # Décaler légèrement le point le long de la normale pour éviter l'auto-intersection (shadow acne)
+            normal = closest_object.get_normal(point)
+            shadow_origin = add(point, mul(normal, 0.001))
+            
+            # Si c'est une PointLight, t_max_shadow est la distance jusqu'à la lumière
+            # Si c'est une DirLight, on garde t_max (infini)
+            t_max_shadow = dir_length if hasattr(l, 'position') else t_max
+            
             shadow_obj, shadow_t, _ = closest_intersection(
-                point,
-                dir,
-                t_min, t_max,
+                shadow_origin,
+                dir_normalized,
+                0.0, t_max_shadow,
                 objects
             )
             if shadow_obj is not None:
@@ -64,7 +77,7 @@ def trace_ray(O, D, t_min, t_max, objects, lights, background=(255, 255, 255)):
     if(closest_color is None):
         return background
     
-    intensity_r, intensity_g, intensity_b = compute_lighting(O, D, closest_object, closest_t, lights, objects, t_min, t_max)
+    intensity_r, intensity_g, intensity_b = compute_lighting(O, D, closest_object, closest_t, lights, objects, t_max, t_min)
         
     closest_color = (
             min(255, int(closest_color[0] * intensity_r)),
