@@ -1,6 +1,6 @@
-from maths import dot, length, sub, mul
-from AbstractLight import AbstractLight
-from lightning_utils import calcLighting
+from utils.maths import dot, length, sub, mul
+from lights.AbstractLight import AbstractLight
+from utils.lightning_utils import calcLighting
 
 class PointLight(AbstractLight):
     def __init__(self, position, intensity):

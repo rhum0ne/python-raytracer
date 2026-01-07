@@ -1,6 +1,5 @@
 import math
 
-import numpy
 def dot(a, b):
     return a[0]*b[0] + a[1]*b[1] + a[2]*b[2]
 
@@ -15,8 +14,11 @@ def mul(a, k: float):
 
 
 def normalize(v):
-    return mul(v, 1.0 / length(v))
+    len_sq = dot(v, v)
+    if len_sq < 1e-10:
+        return (0, 0, 0)
+    return mul(v, 1.0 / (len_sq ** 0.5))
 
 def length(v):
-    return numpy.sqrt(dot(v, v))
+    return math.sqrt(dot(v, v))
 

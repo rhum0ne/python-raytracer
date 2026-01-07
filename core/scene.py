@@ -1,8 +1,8 @@
-from sphere_utils import Sphere
-from PointLight import PointLight
-from DirLight import DirLight
-from AmbientLight import AmbientLight
-from Plane import Plane
+from objects.sphere_utils import Sphere
+from lights.PointLight import PointLight
+from lights.DirLight import DirLight
+from lights.AmbientLight import AmbientLight
+from objects.Plane import Plane
 
 class Scene:
     def __init__(self):

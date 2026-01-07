@@ -1,6 +1,6 @@
-from maths import dot, sub
+from utils.maths import dot, sub
 import math
-from AbstractObject import AbstractObject
+from objects.AbstractObject import AbstractObject
 
 
 class Sphere(AbstractObject):
@@ -14,16 +14,20 @@ class Sphere(AbstractObject):
         return intersect_ray_sphere(origin, direction, self)
     
     def get_normal(self, point):
-        return sub(point, self.center)
+        N = sub(point, self.center)
+        len_sq = dot(N, N)
+        if len_sq < 1e-10:
+            return (0, 1, 0)
+        return (N[0] / (len_sq ** 0.5), N[1] / (len_sq ** 0.5), N[2] / (len_sq ** 0.5))
 
 #O est le point de départ du rayon
 #D est la direction du rayon
 def intersect_ray_sphere(O, D, sphere: Sphere):
-    # returns (inf, inf) if no hit
     r = sphere.radius
     CO = sub(O, sphere.center)
 
     a = dot(D, D)
+    
     b = 2.0 * dot(CO, D)
     c = dot(CO, CO) - r*r
 
@@ -31,11 +35,14 @@ def intersect_ray_sphere(O, D, sphere: Sphere):
     if disc < 0:
         return math.inf
     
-    if(disc == 0):
+    if disc < 1e-10: #Simplifier les cas très proches de 0 et 0 lui même
         return -b / (2*a)
 
     sqrt_disc = math.sqrt(disc)
-    t1 = (-b + sqrt_disc) / (2*a)
     t2 = (-b - sqrt_disc) / (2*a)
-
-    return min(t1, t2)
+    
+    if t2 > 0:
+        return t2
+    
+    t1 = (-b + sqrt_disc) / (2*a)
+    return t1 if t1 > 0 else math.inf

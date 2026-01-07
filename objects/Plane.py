@@ -1,7 +1,7 @@
-from AbstractObject import AbstractObject
+from objects.AbstractObject import AbstractObject
 import math
 
-from maths import dot
+from utils.maths import dot
 
 
 class Plane(AbstractObject):
@@ -13,10 +13,15 @@ class Plane(AbstractObject):
         self.normal = normal
     
     def intersect(self, origin, direction):
-        if(dot(self.normal, direction) >= 0):
-            return math.inf  # Le rayon est parallèle ou dessus du plan
+        denominator = dot(self.normal, direction)
         
-        #La distance d'intersection d'une droite avec un plan est: t = ((P0 - O) . N) / (L . D)
+        if abs(denominator) < 1e-10:
+            return math.inf
+        
+        if denominator >= 0:
+            return math.inf
+        
+        #La distance d'intersection d'une droite avec un plan est: t = ((P0 - O) . N) / (D . N)
         #P0 est un point du plan
         #O est l'origine du rayon
         #N est la normale du plan
@@ -27,7 +32,6 @@ class Plane(AbstractObject):
             self.point[2] - origin[2],
         )
         numerator = dot(P_moins_O, self.normal)
-        denominator = dot(direction, self.normal)
         return numerator / denominator
     
     def get_normal(self, point):

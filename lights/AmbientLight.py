@@ -1,5 +1,5 @@
-from AbstractLight import AbstractLight
-from maths import dot, length, mul
+from lights.AbstractLight import AbstractLight
+from utils.maths import dot, length, mul
 
 
 class AmbientLight(AbstractLight):

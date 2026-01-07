@@ -1,5 +1,5 @@
-from AbstractLight import AbstractLight
-from lightning_utils import calcLighting
+from lights.AbstractLight import AbstractLight
+from utils.lightning_utils import calcLighting
 
 class DirLight(AbstractLight):
     

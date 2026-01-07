@@ -1,4 +1,4 @@
-﻿from graphics import RaytracerApp
+﻿from core.graphics import RaytracerApp
 
 
 if __name__ == "__main__":

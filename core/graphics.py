@@ -5,9 +5,9 @@ try:
     from PIL import Image, ImageTk
 except ImportError:
     raise SystemExit("Pillow manquant. Installe-le avec: pip install pillow")
-from camera import Camera
-from scene import Scene
-from maths import mul, sub, dot, normalize, add, length
+from core.camera import Camera
+from core.scene import Scene
+from utils.maths import mul, sub, dot, normalize, add, length
 
 def closest_intersection(O, D, t_min, t_max, objects):
     closest_t = math.inf
@@ -17,63 +17,77 @@ def closest_intersection(O, D, t_min, t_max, objects):
     for obj in objects:
         intersection = obj.intersect(O, D)
 
-        if t_min <= intersection <= t_max and intersection < closest_t:
+        if t_min <= intersection < closest_t:
+            if intersection > t_max:
+                continue
             closest_t = intersection
             closest_color = obj.color
             closest_object = obj
+            
+            if closest_t < t_min * 1.01:
+                break
 
     return closest_object, closest_t, closest_color
 
-def compute_lighting(O, D, closest_object, closest_t, lights, objects, t_max, t_min=0.001):
+def compute_lighting_optimized(point, normal, ray, closest_object, lights, objects, t_max, t_min=0.001):
     intensity_r = 0.0
     intensity_g = 0.0
     intensity_b = 0.0
+    
+    shadow_origin = add(point, mul(normal, 0.001))
+    
     for l in lights:
-        point = (O[0] + D[0]*closest_t,
-                 O[1] + D[1]*closest_t,
-                 O[2] + D[2]*closest_t)
-        
-        #Shadow check
         dir = l.get_direction_from_point(point)
-        if(dir is not None):
-            dir_length = length(dir)
-            dir_normalized = normalize(dir)
+        if dir is None:
+            continue
+        
+        dir_length = length(dir)
+        if dir_length < 1e-10:
+            continue
+        
+        dir_normalized = normalize(dir)
             
-            normal = closest_object.get_normal(point)
-            shadow_origin = add(point, mul(normal, 0.001))
-            
-            t_max_shadow = dir_length if hasattr(l, 'position') else t_max
-            
-            shadow_obj, shadow_t, _ = closest_intersection(
-                shadow_origin,
-                dir_normalized,
-                0.0, t_max_shadow,
-                objects
-            )
-            if shadow_obj is not None:
-                continue
-
+        t_max_shadow = dir_length if hasattr(l, 'position') else t_max
+        
+        shadow_obj, shadow_t, _ = closest_intersection(
+            shadow_origin,
+            dir_normalized,
+            0.0, t_max_shadow,
+            objects
+        )
+        if shadow_obj is not None:
+            continue
         
         intensity = l.calcIntensityAtPoint(
             point,
-            normal=closest_object.get_normal(point),
-            ray=D, #mul(D, -1),
+            normal=normal,
+            ray=ray,
             specular=closest_object.specular
         )
+        
+        if intensity[0] == 0 and intensity[1] == 0 and intensity[2] == 0:
+            continue
+        
         intensity_r += intensity[0]
         intensity_g += intensity[1]
         intensity_b += intensity[2]
 
     return (intensity_r, intensity_g, intensity_b)
 
-def trace_ray(O, D, t_min, t_max, objects, lights, background=(255, 255, 255), recursion_depth=2):
-    """Trace un rayon et retourne la couleur."""
+def trace_ray(O, D, t_min, t_max, objects, lights, background=(255, 255, 255), recursion_depth=2, point=None, normal=None):
     closest_object, closest_t, closest_color = closest_intersection(O, D, t_min, t_max, objects)
 
-    if(closest_color is None):
+    if closest_color is None:
         return background
     
-    intensity_r, intensity_g, intensity_b = compute_lighting(O, D, closest_object, closest_t, lights, objects, t_max, t_min)
+    if point is None:
+        point = (O[0] + D[0]*closest_t, O[1] + D[1]*closest_t, O[2] + D[2]*closest_t)
+    if normal is None:
+        normal = closest_object.get_normal(point)
+    
+    intensity_r, intensity_g, intensity_b = compute_lighting_optimized(
+        point, normal, D, closest_object, lights, objects, t_max, t_min
+    )
         
     closest_color = (
             min(255, int(closest_color[0] * intensity_r)),
@@ -82,19 +96,14 @@ def trace_ray(O, D, t_min, t_max, objects, lights, background=(255, 255, 255), r
         )
     
     r = closest_object.reflective
-    if recursion_depth <= 0 or r <= 0:
+    if recursion_depth <= 0 or r <= 1e-3:
         return closest_color
     
-    P = (O[0] + D[0]*closest_t, O[1] + D[1]*closest_t, O[2] + D[2]*closest_t)
-    N = closest_object.get_normal(P)
-    R = getReflectedRay(D, N)
-    
-    # Décaler légèrement le point le long de la normale pour éviter l'auto-intersection
-    from maths import add
-    P_offset = add(P, mul(N, 0.001))
+    R = getReflectedRay(D, normal)
+    P_offset = add(point, mul(normal, 0.001))
     
     reflected_color = trace_ray(
-        P, R, t_min, t_max, objects, lights, background, recursion_depth - 1
+        P_offset, R, 0.001, t_max, objects, lights, background, recursion_depth - 1
     )
 
     return (
@@ -104,7 +113,6 @@ def trace_ray(O, D, t_min, t_max, objects, lights, background=(255, 255, 255), r
     )
 
 def getReflectedRay(D, N):
-    N = normalize(N)
     dot_D_N = dot(D, N)
     return sub(D, mul(N, 2 * dot_D_N))
 
@@ -161,6 +169,8 @@ class RaytracerApp:
                 x = (i - half_w)
 
                 D = self.camera.canvas_to_viewport(x, y)
+                # Normaliser la direction pour avoir des distances cohérentes
+                D = normalize(D)
                 color = trace_ray(
                     self.camera.pos, D, 
                     t_min=1.0, t_max=math.inf, 
