@@ -8,9 +8,15 @@ class DirLight(AbstractLight):
         super().__init__(intensity)
         self.direction = direction 
     
-    def calcIntensityAtPoint(self, point, normal):
+    def calcIntensityAtPoint(self, point, normal, ray, specular=-1):
         #Je sais pas pourquoi ca marche, mais ca marche, 
-        if(dot(normal, self.direction) >= 0):
+        N_dot_Dir = dot(normal, self.direction);
+        if( N_dot_Dir >= 0):
             return (0, 0, 0)
         
-        return mul(self.intensity, -dot(normal, self.direction) / (length(self.direction) * length(normal)))
+        n_len = length(normal)
+        l_len = length(self.direction)
+        if n_len == 0 or l_len == 0:
+            return (0, 0, 0)
+        
+        return mul(self.intensity, -N_dot_Dir / (l_len * n_len))

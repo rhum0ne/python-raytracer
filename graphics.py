@@ -60,7 +60,7 @@ class RaytracerApp:
     
     def __init__(self):
         # Créer la caméra et la scène
-        self.camera = Camera(canvas_width=600, canvas_height=400)
+        self.camera = Camera(canvas_width=1200, canvas_height=800)
         self.scene = Scene()
 
         # Tk window
@@ -68,20 +68,13 @@ class RaytracerApp:
         self.root.title("Python Raytracing")
         self.root.protocol("WM_DELETE_WINDOW", self.shutdown)
 
-        # UI
-        top = tk.Frame(self.root)
-        top.pack(fill="x", padx=10, pady=10)
-
-        self.btn_restart = tk.Button(top, text="Re-render", command=self.restart)
-        self.btn_restart.pack(side="right")
-
         # Image buffer (Pillow)
         self.img = Image.new("RGB", (self.camera.Cw, self.camera.Ch), (255, 255, 255))
         self.px = self.img.load()
 
         self.tk_img = None
         self.label = tk.Label(self.root)
-        self.label.pack(padx=10, pady=10)
+        self.label.pack(expand=True, fill="both")
 
         # Render state
         self.playing = True

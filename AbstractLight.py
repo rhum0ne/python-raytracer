@@ -7,7 +7,7 @@ class AbstractLight(ABC):
         self.intensity = intensity  # (r, g, b)
     
     @abstractmethod
-    def calcIntensityAtPoint(self, point, normal):
+    def calcIntensityAtPoint(self, point, normal, ray, specular=-1):
         """
         Calcule l'intensité de la lumière à un point donné.
         
