@@ -5,7 +5,7 @@ try:
     from PIL import Image, ImageTk
 except ImportError:
     raise SystemExit("Pillow manquant. Installe-le avec: pip install pillow")
-
+from maths import mul
 from camera import Camera
 from scene import Scene
 from AbstractObject import AbstractObject
@@ -36,11 +36,8 @@ def trace_ray(O, D, t_min, t_max, objects, lights, background=(255, 255, 255)):
         
         intensity = l.calcIntensityAtPoint(
             point,
-            #normal=(O[0] + D[0]*closest_t - closest_object.center[0],
-            #        O[1] + D[1]*closest_t - closest_object.center[1],
-            #        O[2] + D[2]*closest_t - closest_object.center[2])
             normal=closest_object.get_normal(point),
-            ray=D,
+            ray=mul(D, -1),
             specular=closest_object.specular
         )
         intensity_total = (

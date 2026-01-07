@@ -7,8 +7,8 @@ from Plane import Plane
 class Scene:
     def __init__(self):
         self.objects = [
-            Sphere(center=(-2.0, 0, 10.0), radius=1.2, color=(0, 0, 255)),
-            Sphere(center=(1.0,-1, 6.0), radius=1.2, color=(0, 255, 0)),
+            Sphere(center=(-2.0, 0, 10.0), radius=1.2, color=(0, 0, 255), specular=500),
+            Sphere(center=(1.0,-1, 6.0), radius=1.2, color=(0, 255, 0), specular=1000),
             Plane(point=(0.0, -1.5, 0.0), normal=(0.0, 1.0, 0.0), color=(255, 255, 0)),
         ]
 

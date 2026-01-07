@@ -4,10 +4,11 @@ from AbstractObject import AbstractObject
 
 
 class Sphere(AbstractObject):
-    def __init__(self, center, radius, color):
+    def __init__(self, center, radius, color, specular=-1):
         super().__init__(color)
         self.center = center
         self.radius = radius
+        self.specular = specular
 
     def intersect(self, origin, direction):
         return intersect_ray_sphere(origin, direction, self)
