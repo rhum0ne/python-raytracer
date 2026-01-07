@@ -35,7 +35,7 @@ def intersect_ray_sphere(O, D, sphere: Sphere):
     if disc < 0:
         return math.inf
     
-    if disc < 1e-10: #Simplifier les cas très proches de 0 et 0 lui même
+    if disc < 1e-1: #Simplifier les cas très proches de 0 et 0 lui même
         return -b / (2*a)
 
     sqrt_disc = math.sqrt(disc)
