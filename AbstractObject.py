@@ -3,9 +3,10 @@ from abc import ABC, abstractmethod
 
 class AbstractObject(ABC):
     
-    def __init__(self, color, specular=10.0):
+    def __init__(self, color, specular=10.0, reflective=0.0):
         self.color = color  # (r, g, b)
         self.specular = specular
+        self.reflective = reflective
     
     @abstractmethod
     def intersect(self, origin, direction):

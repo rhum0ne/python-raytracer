@@ -4,8 +4,8 @@ from AbstractObject import AbstractObject
 
 
 class Sphere(AbstractObject):
-    def __init__(self, center, radius, color, specular=-1):
-        super().__init__(color)
+    def __init__(self, center, radius, color, specular=-1, reflective=0.0):
+        super().__init__(color, specular, reflective)
         self.center = center
         self.radius = radius
         self.specular = specular

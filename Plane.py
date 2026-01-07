@@ -7,8 +7,8 @@ from maths import dot
 class Plane(AbstractObject):
     """Plan défini par un point et une normale."""
     
-    def __init__(self, point, normal, color):
-        super().__init__(color)
+    def __init__(self, point, normal, color, specular=-1, reflective=0.0):
+        super().__init__(color, specular, reflective)
         self.point = point
         self.normal = normal
     

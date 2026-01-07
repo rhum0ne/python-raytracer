@@ -7,7 +7,7 @@ class Camera:
         self.Vw = 3.0
         self.Vh = 2.0
         self.d = 1.0 
-        self.pos = (0.0, 0.0, 0.0)
+        self.pos = (0.0, 1.0, 0.0)
 
     def canvas_to_viewport(self, x, y):
         return (

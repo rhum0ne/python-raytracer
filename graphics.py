@@ -7,6 +7,7 @@ except ImportError:
     raise SystemExit("Pillow manquant. Installe-le avec: pip install pillow")
 from camera import Camera
 from scene import Scene
+from maths import mul, sub, dot, normalize, add, length
 
 def closest_intersection(O, D, t_min, t_max, objects):
     closest_t = math.inf
@@ -35,17 +36,12 @@ def compute_lighting(O, D, closest_object, closest_t, lights, objects, t_max, t_
         #Shadow check
         dir = l.get_direction_from_point(point)
         if(dir is not None):
-            # Pour les lumières ponctuelles, limiter t_max à la distance de la lumière
-            from maths import length, normalize, add, mul
             dir_length = length(dir)
             dir_normalized = normalize(dir)
             
-            # Décaler légèrement le point le long de la normale pour éviter l'auto-intersection (shadow acne)
             normal = closest_object.get_normal(point)
             shadow_origin = add(point, mul(normal, 0.001))
             
-            # Si c'est une PointLight, t_max_shadow est la distance jusqu'à la lumière
-            # Si c'est une DirLight, on garde t_max (infini)
             t_max_shadow = dir_length if hasattr(l, 'position') else t_max
             
             shadow_obj, shadow_t, _ = closest_intersection(
@@ -70,7 +66,7 @@ def compute_lighting(O, D, closest_object, closest_t, lights, objects, t_max, t_
 
     return (intensity_r, intensity_g, intensity_b)
 
-def trace_ray(O, D, t_min, t_max, objects, lights, background=(255, 255, 255)):
+def trace_ray(O, D, t_min, t_max, objects, lights, background=(255, 255, 255), recursion_depth=2):
     """Trace un rayon et retourne la couleur."""
     closest_object, closest_t, closest_color = closest_intersection(O, D, t_min, t_max, objects)
 
@@ -84,7 +80,33 @@ def trace_ray(O, D, t_min, t_max, objects, lights, background=(255, 255, 255)):
             min(255, int(closest_color[1] * intensity_g)),
             min(255, int(closest_color[2] * intensity_b))
         )
-    return closest_color
+    
+    r = closest_object.reflective
+    if recursion_depth <= 0 or r <= 0:
+        return closest_color
+    
+    P = (O[0] + D[0]*closest_t, O[1] + D[1]*closest_t, O[2] + D[2]*closest_t)
+    N = closest_object.get_normal(P)
+    R = getReflectedRay(D, N)
+    
+    # Décaler légèrement le point le long de la normale pour éviter l'auto-intersection
+    from maths import add
+    P_offset = add(P, mul(N, 0.001))
+    
+    reflected_color = trace_ray(
+        P, R, t_min, t_max, objects, lights, background, recursion_depth - 1
+    )
+
+    return (
+        int(closest_color[0] * (1 - r) + reflected_color[0] * r),
+        int(closest_color[1] * (1 - r) + reflected_color[1] * r),
+        int(closest_color[2] * (1 - r) + reflected_color[2] * r)
+    )
+
+def getReflectedRay(D, N):
+    N = normalize(N)
+    dot_D_N = dot(D, N)
+    return sub(D, mul(N, 2 * dot_D_N))
 
 
 class RaytracerApp:
