@@ -39,7 +39,9 @@ def trace_ray(O, D, t_min, t_max, objects, lights, background=(255, 255, 255)):
             #normal=(O[0] + D[0]*closest_t - closest_object.center[0],
             #        O[1] + D[1]*closest_t - closest_object.center[1],
             #        O[2] + D[2]*closest_t - closest_object.center[2])
-            normal=closest_object.get_normal(point)
+            normal=closest_object.get_normal(point),
+            ray=D,
+            specular=closest_object.specular
         )
         intensity_total = (
             intensity_total[0] + intensity[0],
