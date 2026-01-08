@@ -18,3 +18,16 @@ class Camera:
             y * self.vh_ch_ratio,
             self.d
         )
+    
+    def get_ray_direction(self, i, j):
+        """Calcule la direction du rayon pour le pixel (i, j)."""
+        from utils.maths import normalize
+        
+        half_w = self.Cw // 2
+        half_h = self.Ch // 2
+        
+        x = i - half_w
+        y = half_h - j
+        
+        D = self.canvas_to_viewport(x, y)
+        return normalize(D)
