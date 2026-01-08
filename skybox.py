@@ -1,5 +1,6 @@
 import math
 from PIL import Image
+from functools import lru_cache
 
 def gradient_sky(D):
     dx, dy, dz = D
@@ -18,7 +19,14 @@ class Skybox:
         self.img = Image.open(path).convert("RGB")
         self.w, self.h = self.img.size
         self.px = self.img.load()
+        
+        # Pré-calculer les constantes
+        self.w_minus_1 = self.w - 1
+        self.h_minus_1 = self.h - 1
+        self.two_pi = 2.0 * math.pi
+        self.pi = math.pi
 
+    @lru_cache(maxsize=8192)
     def sample(self, D):
         dx, dy, dz = D
         l = math.sqrt(dx*dx + dy*dy + dz*dz)
@@ -26,11 +34,11 @@ class Skybox:
             return (0, 0, 0)
         dx /= l; dy /= l; dz /= l
 
-        u = 0.5 + math.atan2(dz, dx) / (2.0 * math.pi)
-        v = 0.5 - math.asin(dy) / math.pi
+        u = 0.5 + math.atan2(dz, dx) / self.two_pi
+        v = 0.5 - math.asin(dy) / self.pi
 
-        x = int(u * (self.w - 1)) % self.w
-        y = int(v * (self.h - 1))
-        y = 0 if y < 0 else (self.h - 1 if y >= self.h else y)
+        x = int(u * self.w_minus_1) % self.w
+        y = int(v * self.h_minus_1)
+        y = 0 if y < 0 else (self.h_minus_1 if y >= self.h else y)
 
         return self.px[x, y]

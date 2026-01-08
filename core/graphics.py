@@ -1,10 +1,9 @@
 import math
 import tkinter as tk
+from multiprocessing import Pool, cpu_count
+from numba import jit
 
-try:
-    from PIL import Image, ImageTk
-except ImportError:
-    raise SystemExit("Pillow manquant. Installe-le avec: pip install pillow")
+from PIL import Image, ImageTk
 from core.camera import Camera
 from core.scene import Scene
 from utils.maths import mul, sub, dot, normalize, add, length
@@ -21,19 +20,14 @@ def closest_intersection(O, D, t_min, t_max, objects):
     for obj in objects:
         intersection = obj.intersect(O, D)
 
-        if t_min <= intersection < closest_t:
-            if intersection > t_max:
-                continue
+        if t_min <= intersection < closest_t and intersection <= t_max:
             closest_t = intersection
             closest_color = obj.color
             closest_object = obj
-            
-            if closest_t < t_min * 1.01:
-                break
 
     return closest_object, closest_t, closest_color
 
-def compute_lighting_optimized(point, normal, ray, closest_object, lights, objects, t_max, t_min=0.001):
+def compute_lighting(point, normal, ray, closest_object, lights, objects, t_max, t_min=0.001):
     intensity_r = 0.0
     intensity_g = 0.0
     intensity_b = 0.0
@@ -91,14 +85,14 @@ def trace_ray(O, D, t_min, t_max, objects, lights, background=(255, 255, 255), r
     if normal is None:
         normal = closest_object.get_normal(point)
     
-    intensity_r, intensity_g, intensity_b = compute_lighting_optimized(
+    intensity_r, intensity_g, intensity_b = compute_lighting(
         point, normal, D, closest_object, lights, objects, t_max, t_min
     )
     
     c0, c1, c2 = closest_color
-    final_r = int(c0 * intensity_r) if c0 * intensity_r < 255 else 255
-    final_g = int(c1 * intensity_g) if c1 * intensity_g < 255 else 255
-    final_b = int(c2 * intensity_b) if c2 * intensity_b < 255 else 255
+    final_r = min(255, int(c0 * intensity_r))
+    final_g = min(255, int(c1 * intensity_g))
+    final_b = min(255, int(c2 * intensity_b))
     
     r = closest_object.reflective
     if recursion_depth <= 0 or r <= 1e-3:
@@ -113,18 +107,37 @@ def trace_ray(O, D, t_min, t_max, objects, lights, background=(255, 255, 255), r
     
     one_minus_r = 1 - r
     return (
-        int(final_r * one_minus_r + reflected_color[0] * r),
-        int(final_g * one_minus_r + reflected_color[1] * r),
-        int(final_b * one_minus_r + reflected_color[2] * r)
+        min(255, int(final_r * one_minus_r + reflected_color[0] * r)),
+        min(255, int(final_g * one_minus_r + reflected_color[1] * r)),
+        min(255, int(final_b * one_minus_r + reflected_color[2] * r))
     )
 
+@jit(nopython=True, cache=True, fastmath=True)
 def getReflectedRay(D, N):
     dot_D_N = dot(D, N)
     return sub(D, mul(N, 2 * dot_D_N))
 
 
+def render_row(args):
+    j, width, camera_get_ray_dir, camera_pos, scene_objects, scene_lights = args
+    
+    row_pixels = []
+    t_max = math.inf
+    
+    for i in range(width):
+        D = camera_get_ray_dir(i, j)
+        color = trace_ray(
+            camera_pos, D, 
+            t_min=1.0, t_max=t_max, 
+            objects=scene_objects,
+            lights=scene_lights
+        )
+        row_pixels.append((i, j, color))
+    
+    return row_pixels
+
+
 class RaytracerApp:
-    """Application principale de raytracing avec interface Tkinter."""
     
     def __init__(self):
         self.camera = Camera(canvas_width=1200, canvas_height=800)
@@ -143,19 +156,23 @@ class RaytracerApp:
 
         self.playing = True
         self.current_row = 0
-        self.rows_per_tick = 30
+        self.rows_per_tick = 800
         
         self.half_w = self.camera.Cw // 2
         self.half_h = self.camera.Ch // 2
         self.scene_objects = self.scene.objects
         self.scene_lights = self.scene.lights
         self.camera_pos = self.camera.pos
+        
+        self.num_processes = cpu_count()
+        self.pool = Pool(processes=self.num_processes)
+        
+        self.root.bind('<KeyPress>', self.on_key_press)
 
         self.update_tk_image()
         self.root.after(0, self.render_tick)
 
     def update_tk_image(self):
-        """Convertir l'image Pillow -> Tkinter."""
         self.tk_img = ImageTk.PhotoImage(self.img)
         self.label.configure(image=self.tk_img)
 
@@ -166,26 +183,24 @@ class RaytracerApp:
         y0 = self.current_row
         y1 = min(self.camera.Ch, y0 + self.rows_per_tick)
 
-        half_w = self.half_w
-        half_h = self.half_h
-        canvas_to_viewport = self.camera.canvas_to_viewport
-        camera_pos = self.camera_pos
-        scene_objects = self.scene_objects
-        scene_lights = self.scene_lights
-
+        # Préparer les arguments pour chaque ligne
+        row_args = []
         for j in range(y0, y1):
-            y = half_h - j
-            for i in range(self.camera.Cw):
-                x = i - half_w
-
-                D = canvas_to_viewport(x, y)
-                D = normalize(D)
-                color = trace_ray(
-                    camera_pos, D, 
-                    t_min=1.0, t_max=math.inf, 
-                    objects=scene_objects,
-                    lights=scene_lights
-                )
+            row_args.append((
+                j,
+                self.camera.Cw,
+                self.camera.get_ray_direction,
+                self.camera_pos,
+                self.scene_objects,
+                self.scene_lights
+            ))
+        
+        # Rendre les lignes en parallèle
+        results = self.pool.map(render_row, row_args)
+        
+        # Appliquer les pixels à l'image
+        for row_pixels in results:
+            for i, j, color in row_pixels:
                 self.px[i, j] = color
 
         self.current_row = y1
@@ -198,15 +213,44 @@ class RaytracerApp:
         """Recommence le rendu depuis le début."""
         self.img.paste((255, 255, 255), (0, 0, self.camera.Cw, self.camera.Ch))
         self.current_row = 0
+        self.camera_pos = self.camera.pos
         self.update_tk_image()
         self.root.after(0, self.render_tick)
+    
+    def on_key_press(self, event):
+        moved = False
+        
+        # WASD ou flèches pour les déplacements
+        if event.keysym in ('w', 'W', 'Up'):
+            self.camera.move_forward()
+            moved = True
+        elif event.keysym in ('s', 'S', 'Down'):
+            self.camera.move_backward()
+            moved = True
+        elif event.keysym in ('a', 'A', 'Left'):
+            self.camera.move_left()
+            moved = True
+        elif event.keysym in ('d', 'D', 'Right'):
+            self.camera.move_right()
+            moved = True
+        elif event.keysym in ('q', 'Q'):
+            self.camera.move_down()
+            moved = True
+        elif event.keysym in ('e', 'E'):
+            self.camera.move_up()
+            moved = True
+        elif event.keysym == 'r':
+            self.restart()
+            return
+        
+        if moved:
+            self.restart()
 
     def shutdown(self):
-        """Arrête proprement l'application."""
         self.playing = False
+        self.pool.close()
+        self.pool.join()
         self.root.destroy()
 
     def run(self):
-        """Lance la boucle principale."""
         self.root.mainloop()
-

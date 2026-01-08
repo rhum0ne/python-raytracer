@@ -1,11 +1,13 @@
 from lights.AbstractLight import AbstractLight
 from utils.lightning_utils import calcLighting
+from utils.maths import normalize
 
 class DirLight(AbstractLight):
     
     def __init__(self, direction, intensity):
         super().__init__(intensity)
-        self.direction = direction 
+        # Normaliser la direction une seule fois au démarrage
+        self.direction = normalize(direction)
     
     def calcIntensityAtPoint(self, point, normal, ray, specular=-1):
         return calcLighting(
