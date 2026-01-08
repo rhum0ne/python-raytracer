@@ -1,5 +1,6 @@
 from PIL import Image
 import os
+from datetime import datetime
 
 def save_gif(self, frames):
     os.makedirs("out", exist_ok=True)

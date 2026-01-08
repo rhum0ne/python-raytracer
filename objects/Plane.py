@@ -27,3 +27,6 @@ class Plane(AbstractObject):
     
     def get_normal(self, point):
         return self.normal
+
+    def get_position(self):
+        return self.point

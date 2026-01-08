@@ -63,3 +63,6 @@ class Cube(AbstractObject):
             return (0, math.copysign(1, n[1]), 0)
         else:
             return (0, 0, math.copysign(1, n[2]))
+        
+    def get_position(self):
+        return self.center

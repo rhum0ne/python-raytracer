@@ -12,6 +12,7 @@ from core.scene import Scene
 from utils.maths import mul, sub, dot, normalize, add, length
 from skybox import Skybox
 from skybox import gradient_sky
+from gifs import save_gif
 
 sky = Skybox("sky.jpg")
 
@@ -170,7 +171,7 @@ class RaytracerApp:
         
             frames.append(self.img.copy())
     
-        self.save_gif(frames)
+        save_gif(self, frames)
 
     def render(self):
         print("Début du rendu...")
