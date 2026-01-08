@@ -155,6 +155,22 @@ class RaytracerApp:
         self.num_processes = cpu_count()
         self.pool = Pool(processes=self.num_processes)
         print(f"Utilisation de {self.num_processes} coeurs")
+        
+    def render_animation(self):
+        frames = []
+    
+        for frame in range(self.scene.animation_steps):
+            print(f"Rendu de la frame {frame + 1}/{self.scene.animation_steps}...")
+        
+            self.scene.update_frame(frame)
+        
+            self.scene_objects = self.scene.objects
+        
+            self.render()
+        
+            frames.append(self.img.copy())
+    
+        self.save_gif(frames)
 
     def render(self):
         print("Début du rendu...")

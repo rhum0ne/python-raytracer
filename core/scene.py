@@ -21,3 +21,4 @@ class Scene:
         ]
         
         self.camera = Camera(canvas_width=1200, canvas_height=800)
+        self.animation_steps = 1
