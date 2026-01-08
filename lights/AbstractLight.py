@@ -3,8 +3,9 @@ from abc import ABC, abstractmethod
 
 class AbstractLight(ABC):
     
-    def __init__(self, intensity):
-        self.intensity = intensity  # (r, g, b)
+    def __init__(self, intensity, is_point_light=False):
+        self.intensity = intensity
+        self.is_point_light = is_point_light
     
     @abstractmethod
     def calcIntensityAtPoint(self, point, normal, ray, specular=-1):

@@ -4,8 +4,8 @@ from utils.lightning_utils import calcLighting
 
 class PointLight(AbstractLight):
     def __init__(self, position, intensity):
-        super().__init__(intensity)
-        self.position = position  # (x, y, z)
+        super().__init__(intensity, is_point_light=True)
+        self.position = position
 
     def calcIntensityAtPoint(self, point, normal, ray, specular=-1):
         L = sub(self.position, point)

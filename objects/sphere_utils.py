@@ -26,23 +26,21 @@ def intersect_ray_sphere(O, D, sphere: Sphere):
     r = sphere.radius
     CO = sub(O, sphere.center)
 
-    a = dot(D, D)
-    
     b = 2.0 * dot(CO, D)
     c = dot(CO, CO) - r*r
 
-    disc = b*b - 4*a*c
+    disc = b*b - 4*c
     if disc < 0:
         return math.inf
     
-    if disc < 1e-1: #Simplifier les cas très proches de 0 et 0 lui même
-        return -b / (2*a)
+    if disc < 1e-1:
+        return -b / 2
 
     sqrt_disc = math.sqrt(disc)
-    t2 = (-b - sqrt_disc) / (2*a)
+    t2 = (-b - sqrt_disc) / 2
     
     if t2 > 0:
         return t2
     
-    t1 = (-b + sqrt_disc) / (2*a)
+    t1 = (-b + sqrt_disc) / 2
     return t1 if t1 > 0 else math.inf

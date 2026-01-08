@@ -1,4 +1,5 @@
 from utils.maths import length, dot, sub, mul
+import math
 
 
 def calcLighting(normal, L, ray, intensity, specular=-1):
@@ -10,7 +11,7 @@ def calcLighting(normal, L, ray, intensity, specular=-1):
     if l_len_sq < 1e-10:
         return (0, 0, 0)
     
-    l_len = l_len_sq ** 0.5
+    l_len = math.sqrt(l_len_sq)
     diffuse = n_dot_l / l_len
     total = mul(intensity, diffuse)
 
@@ -22,7 +23,7 @@ def calcLighting(normal, L, ray, intensity, specular=-1):
             r_len_sq = dot(R, R)
             v_len_sq = dot(ray, ray)
             if r_len_sq > 1e-10 and v_len_sq > 1e-10:
-                denom = (r_len_sq * v_len_sq) ** 0.5
+                denom = math.sqrt(r_len_sq * v_len_sq)
                 spec = (r_dot_v / denom) ** specular
                 specular_pow = mul(intensity, spec)
                 total = (total[0] + specular_pow[0], total[1] + specular_pow[1], total[2] + specular_pow[2])

@@ -5,13 +5,9 @@ try:
     from PIL import Image, ImageTk
 except ImportError:
     raise SystemExit("Pillow manquant. Installe-le avec: pip install pillow")
-from core.camera import Camera
-from core.scene import Scene
-from utils.maths import mul, sub, dot, normalize, add, length
-from skybox import Skybox
-from skybox import gradient_sky
-
-sky = Skybox("sky.jpg")
+from camera import Camera
+from scene import Scene
+from maths import mul, sub, dot, normalize, add, length
 
 def closest_intersection(O, D, t_min, t_max, objects):
     closest_t = math.inf
@@ -19,6 +15,9 @@ def closest_intersection(O, D, t_min, t_max, objects):
     closest_object = None
 
     for obj in objects:
+        if closest_t < t_min * 1.001:
+            break
+            
         intersection = obj.intersect(O, D)
 
         if t_min <= intersection < closest_t:
@@ -27,19 +26,15 @@ def closest_intersection(O, D, t_min, t_max, objects):
             closest_t = intersection
             closest_color = obj.color
             closest_object = obj
-            
-            if closest_t < t_min * 1.01:
-                break
 
     return closest_object, closest_t, closest_color
 
-def compute_lighting_optimized(point, normal, ray, closest_object, lights, objects, t_max, t_min=0.001):
+def compute_lighting(point, normal, ray, closest_object, lights, objects, t_max, t_min=0.001):
     intensity_r = 0.0
     intensity_g = 0.0
     intensity_b = 0.0
     
-    normal_offset = mul(normal, 0.001)
-    shadow_origin = (point[0] + normal_offset[0], point[1] + normal_offset[1], point[2] + normal_offset[2])
+    shadow_origin = (point[0] + normal[0]*0.001, point[1] + normal[1]*0.001, point[2] + normal[2]*0.001)
     
     for l in lights:
         dir = l.get_direction_from_point(point)
@@ -51,16 +46,15 @@ def compute_lighting_optimized(point, normal, ray, closest_object, lights, objec
             continue
         
         dir_normalized = normalize(dir)
+            
+        t_max_shadow = dir_length if l.is_point_light else t_max
         
-        is_point_light = dir_length < t_max
-        t_max_shadow = dir_length if is_point_light else t_max
-        
-        shadow_obj, shadow_t = closest_intersection(
+        shadow_obj, shadow_t, _ = closest_intersection(
             shadow_origin,
             dir_normalized,
             0.0, t_max_shadow,
             objects
-        )[:2]
+        )
         if shadow_obj is not None:
             continue
         
@@ -84,56 +78,61 @@ def trace_ray(O, D, t_min, t_max, objects, lights, background=(255, 255, 255), r
     closest_object, closest_t, closest_color = closest_intersection(O, D, t_min, t_max, objects)
 
     if closest_color is None:
-        return sky.sample(D)
+        return background
     
     if point is None:
         point = (O[0] + D[0]*closest_t, O[1] + D[1]*closest_t, O[2] + D[2]*closest_t)
     if normal is None:
         normal = closest_object.get_normal(point)
     
-    intensity_r, intensity_g, intensity_b = compute_lighting_optimized(
+    intensity_r, intensity_g, intensity_b = compute_lighting(
         point, normal, D, closest_object, lights, objects, t_max, t_min
     )
-    
-    c0, c1, c2 = closest_color
-    final_r = int(c0 * intensity_r) if c0 * intensity_r < 255 else 255
-    final_g = int(c1 * intensity_g) if c1 * intensity_g < 255 else 255
-    final_b = int(c2 * intensity_b) if c2 * intensity_b < 255 else 255
+        
+    closest_color = (
+            min(255, int(closest_color[0] * intensity_r)),
+            min(255, int(closest_color[1] * intensity_g)),
+            min(255, int(closest_color[2] * intensity_b))
+        )
     
     r = closest_object.reflective
     if recursion_depth <= 0 or r <= 1e-3:
-        return (final_r, final_g, final_b)
+        return closest_color
     
     R = getReflectedRay(D, normal)
-    P_offset = add(point, mul(normal, 0.001))
+    P_offset = (point[0] + normal[0]*0.001, point[1] + normal[1]*0.001, point[2] + normal[2]*0.001)
     
     reflected_color = trace_ray(
         P_offset, R, 0.001, t_max, objects, lights, background, recursion_depth - 1
     )
     
-    one_minus_r = 1 - r
+    one_minus_r = 1.0 - r
     return (
-        int(final_r * one_minus_r + reflected_color[0] * r),
-        int(final_g * one_minus_r + reflected_color[1] * r),
-        int(final_b * one_minus_r + reflected_color[2] * r)
+        int(closest_color[0] * one_minus_r + reflected_color[0] * r),
+        int(closest_color[1] * one_minus_r + reflected_color[1] * r),
+        int(closest_color[2] * one_minus_r + reflected_color[2] * r)
     )
 
 def getReflectedRay(D, N):
     dot_D_N = dot(D, N)
-    return sub(D, mul(N, 2 * dot_D_N))
+    two_dot = 2 * dot_D_N
+    return (D[0] - N[0]*two_dot, D[1] - N[1]*two_dot, D[2] - N[2]*two_dot)
 
 
 class RaytracerApp:
     """Application principale de raytracing avec interface Tkinter."""
     
     def __init__(self):
+        # Créer la caméra et la scène
         self.camera = Camera(canvas_width=1200, canvas_height=800)
         self.scene = Scene()
 
+        # Tk window
         self.root = tk.Tk()
         self.root.title("Python Raytracing")
         self.root.protocol("WM_DELETE_WINDOW", self.shutdown)
 
+        # Image buffer (Pillow)
         self.img = Image.new("RGB", (self.camera.Cw, self.camera.Ch), (255, 255, 255))
         self.px = self.img.load()
 
@@ -141,15 +140,10 @@ class RaytracerApp:
         self.label = tk.Label(self.root)
         self.label.pack(expand=True, fill="both")
 
+        # Render state
         self.playing = True
         self.current_row = 0
-        self.rows_per_tick = 30
-        
-        self.half_w = self.camera.Cw // 2
-        self.half_h = self.camera.Ch // 2
-        self.scene_objects = self.scene.objects
-        self.scene_lights = self.scene.lights
-        self.camera_pos = self.camera.pos
+        self.rows_per_tick = 30  # augmente pour accélérer
 
         self.update_tk_image()
         self.root.after(0, self.render_tick)
@@ -160,39 +154,40 @@ class RaytracerApp:
         self.label.configure(image=self.tk_img)
 
     def render_tick(self):
+        """Effectue une partie du rendu à chaque tick."""
         if not self.playing:
             return
 
         y0 = self.current_row
         y1 = min(self.camera.Ch, y0 + self.rows_per_tick)
 
-        half_w = self.half_w
-        half_h = self.half_h
-        canvas_to_viewport = self.camera.canvas_to_viewport
-        camera_pos = self.camera_pos
-        scene_objects = self.scene_objects
-        scene_lights = self.scene_lights
+        half_w = self.camera.Cw // 2
+        half_h = self.camera.Ch // 2
 
         for j in range(y0, y1):
-            y = half_h - j
+            # conversion pixel->coord centrée (y inversé pour "haut" positif)
+            y = (half_h - j)
             for i in range(self.camera.Cw):
-                x = i - half_w
+                x = (i - half_w)
 
-                D = canvas_to_viewport(x, y)
+                D = self.camera.canvas_to_viewport(x, y)
+                # Normaliser la direction pour avoir des distances cohérentes
                 D = normalize(D)
                 color = trace_ray(
-                    camera_pos, D, 
+                    self.camera.pos, D, 
                     t_min=1.0, t_max=math.inf, 
-                    objects=scene_objects,
-                    lights=scene_lights
+                    objects=self.scene.objects,
+                    lights=self.scene.lights
                 )
                 self.px[i, j] = color
 
         self.current_row = y1
+
+        # rafraîchit l'image de temps en temps
         self.update_tk_image()
 
         if self.current_row < self.camera.Ch:
-            self.root.after(1, self.render_tick)
+            self.root.after(1, self.render_tick)  # 1ms => UI reste fluide
 
     def restart(self):
         """Recommence le rendu depuis le début."""

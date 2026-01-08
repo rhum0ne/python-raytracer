@@ -17,7 +17,8 @@ def normalize(v):
     len_sq = dot(v, v)
     if len_sq < 1e-10:
         return (0, 0, 0)
-    return mul(v, 1.0 / (len_sq ** 0.5))
+    inv_len = 1.0 / math.sqrt(len_sq)
+    return (v[0]*inv_len, v[1]*inv_len, v[2]*inv_len)
 
 def length(v):
     return math.sqrt(dot(v, v))
