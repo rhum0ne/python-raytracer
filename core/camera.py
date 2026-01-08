@@ -1,3 +1,6 @@
+
+from utils.maths import normalize
+
 class Camera:
     
     def __init__(self, canvas_width, canvas_height):
@@ -18,9 +21,6 @@ class Camera:
         self._precompute_ray_directions()
     
     def _precompute_ray_directions(self):
-        """Pré-calcule toutes les directions de rayons normalisées."""
-        from utils.maths import normalize
-        
         half_w = self.Cw // 2
         half_h = self.Ch // 2
         

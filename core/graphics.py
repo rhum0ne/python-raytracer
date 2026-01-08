@@ -14,7 +14,6 @@ sky = Skybox("sky.jpg")
 
 def closest_intersection(O, D, t_min, t_max, objects):
     closest_t = math.inf
-    closest_color = None
     closest_object = None
 
     for obj in objects:
@@ -22,10 +21,9 @@ def closest_intersection(O, D, t_min, t_max, objects):
 
         if t_min <= intersection < closest_t and intersection <= t_max:
             closest_t = intersection
-            closest_color = obj.color
             closest_object = obj
 
-    return closest_object, closest_t, closest_color
+    return closest_object, closest_t
 
 def compute_lighting(point, normal, ray, closest_object, lights, objects, t_max, t_min=0.001):
     intensity_r = 0.0
@@ -75,9 +73,9 @@ def compute_lighting(point, normal, ray, closest_object, lights, objects, t_max,
     return (intensity_r, intensity_g, intensity_b)
 
 def trace_ray(O, D, t_min, t_max, objects, lights, background=(255, 255, 255), recursion_depth=2, point=None, normal=None):
-    closest_object, closest_t, closest_color = closest_intersection(O, D, t_min, t_max, objects)
+    closest_object, closest_t = closest_intersection(O, D, t_min, t_max, objects)
 
-    if closest_color is None:
+    if closest_object is None:
         return sky.sample(D)
     
     if point is None:
@@ -89,7 +87,7 @@ def trace_ray(O, D, t_min, t_max, objects, lights, background=(255, 255, 255), r
         point, normal, D, closest_object, lights, objects, t_max, t_min
     )
     
-    c0, c1, c2 = closest_color
+    c0, c1, c2 = closest_object.color
     final_r = min(255, int(c0 * intensity_r))
     final_g = min(255, int(c1 * intensity_g))
     final_b = min(255, int(c2 * intensity_b))
