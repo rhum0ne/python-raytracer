@@ -3,6 +3,7 @@ from lights.PointLight import PointLight
 from lights.DirLight import DirLight
 from lights.AmbientLight import AmbientLight
 from objects.Plane import Plane
+from core.camera import Camera
 
 class Scene:
     def __init__(self):
@@ -18,3 +19,5 @@ class Scene:
             DirLight(direction=(-1.0, -1.0, 1.0), intensity=(0.2, 0.2, 0.2)),
             AmbientLight(intensity=(0.2, 0.2, 0.2))
         ]
+        
+        self.camera = Camera(canvas_width=1200, canvas_height=800)

@@ -119,7 +119,6 @@ def getReflectedRay(D, N):
 
 
 def render_row(args):
-    """Fonction pour rendre une ligne complète en parallèle."""
     j, width, camera_get_ray_dir, camera_pos, scene_objects, scene_lights = args
     
     row_pixels = []
@@ -140,9 +139,9 @@ def render_row(args):
 
 class RaytracerApp:
     
-    def __init__(self):
-        self.camera = Camera(canvas_width=1200, canvas_height=800)
-        self.scene = Scene()
+    def __init__(self, scene):
+        self.camera = scene.camera
+        self.scene = scene
 
         self.img = Image.new("RGB", (self.camera.Cw, self.camera.Ch), (255, 255, 255))
         self.px = self.img.load()
@@ -155,7 +154,7 @@ class RaytracerApp:
         
         self.num_processes = cpu_count()
         self.pool = Pool(processes=self.num_processes)
-        print(f"Utilisation de {self.num_processes} processus pour le rendu parallèle")
+        print(f"Utilisation de {self.num_processes} coeurs")
 
     def render(self):
         print("Début du rendu...")
