@@ -1,3 +1,5 @@
+import json
+from scenes._sceneKeys import *
 from objects.sphere_utils import Sphere
 from lights.PointLight import PointLight
 from lights.DirLight import DirLight
@@ -31,9 +33,34 @@ class Scene:
         self.animations = [
             SphereScaling(self, red_sphere, 0.5, 60),
             LinearMove(self, blue_sphere, (1, 1, 0), 60)
-        ] 
+        ]
         
         
     def update_frame(self, step):
         for anim in self.animations:
             anim.update_frame(step)
+    
+    def loadScene(self, filename: str):
+        """Load a complete scene from a json file. The file name in parameter can be './dir/file.json', '/dir/file.json', 'dir/file.json', 'file.json', or the same ones without '.json'.
+
+        Args:
+            filename (str): the name of the json file
+        """
+        
+        if(not filename.endswith(".json")):
+            filename += ".json"
+            
+        name = filename
+        if(filename.startswith("./scenes/") or filename.startswith("/scenes/") or filename.startswith("scenes/")):
+            name = filename.split("scenes/")[1]
+        
+        try:
+            with open("./scenes/" + name, 'r') as file:
+                scene = json.load(file)
+            spheres: list = scene[OBJECTS][SPHERES]
+            planes: list = scene[OBJECTS][PLANES]
+            lights: list = scene[LIGHTS]
+            
+            
+        except:
+            raise FileNotFoundError("The specified file/path doesn't exists")

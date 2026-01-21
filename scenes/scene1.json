@@ -70,47 +70,47 @@
         "reflective": 0.1
       }
     ],
-    "cubes": [],
-    "lights": [
-      {
-        "points": [
-          {
-            "position": {
-              "x": 2.0,
-              "y": 1.0,
-              "z": 2.0
-            },
-            "intensity": {
-              "r": 0.7,
-              "g": 0.7,
-              "b": 0.7
-            }
+    "cubes": []
+  },
+  "lights": [
+    {
+      "points": [
+        {
+          "position": {
+            "x": 2.0,
+            "y": 1.0,
+            "z": 2.0
+          },
+          "intensity": {
+            "r": 0.7,
+            "g": 0.7,
+            "b": 0.7
           }
-        ],
-        "directionals": [
-          {
-            "position": {
-              "x": -1.0,
-              "y": -1.0,
-              "z": 1.0
-            },
-            "intensity": {
-              "r": 0.2,
-              "g": 0.2,
-              "b": 0.2
-            }
+        }
+      ],
+      "directionals": [
+        {
+          "position": {
+            "x": -1.0,
+            "y": -1.0,
+            "z": 1.0
+          },
+          "intensity": {
+            "r": 0.2,
+            "g": 0.2,
+            "b": 0.2
           }
-        ],
-        "ambients": [
-          {
-            "intensity": {
-              "r": 0.2,
-              "g": 0.2,
-              "b": 0.2
-            }
+        }
+      ],
+      "ambients": [
+        {
+          "intensity": {
+            "r": 0.2,
+            "g": 0.2,
+            "b": 0.2
           }
-        ]
-      }
-    ]
-  }
+        }
+      ]
+    }
+  ]
 }
