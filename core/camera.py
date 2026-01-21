@@ -1,3 +1,5 @@
+from utils.maths import normalize
+
 class Camera:
     
     def __init__(self, canvas_width=600, canvas_height=400):
@@ -20,8 +22,6 @@ class Camera:
         )
     
     def get_ray_direction(self, i, j):
-        """Calcule la direction du rayon pour le pixel (i, j)."""
-        from utils.maths import normalize
         
         half_w = self.Cw // 2
         half_h = self.Ch // 2
