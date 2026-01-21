@@ -1,8 +1,10 @@
 import math
-import tkinter as tk
+import os
+from datetime import datetime
+from multiprocessing import Pool, cpu_count
 
 try:
-    from PIL import Image, ImageTk
+    from PIL import Image
 except ImportError:
     raise SystemExit("Pillow manquant. Installe-le avec: pip install pillow")
 from core.camera import Camera
@@ -10,30 +12,24 @@ from core.scene import Scene
 from utils.maths import mul, sub, dot, normalize, add, length
 from skybox import Skybox
 from skybox import gradient_sky
+from gifs import save_gif
 
 sky = Skybox("sky.jpg")
 
 def closest_intersection(O, D, t_min, t_max, objects):
     closest_t = math.inf
-    closest_color = None
     closest_object = None
 
     for obj in objects:
         intersection = obj.intersect(O, D)
 
-        if t_min <= intersection < closest_t:
-            if intersection > t_max:
-                continue
+        if t_min <= intersection < closest_t and intersection <= t_max:
             closest_t = intersection
-            closest_color = obj.color
             closest_object = obj
-            
-            if closest_t < t_min * 1.01:
-                break
 
-    return closest_object, closest_t, closest_color
+    return closest_object, closest_t
 
-def compute_lighting_optimized(point, normal, ray, closest_object, lights, objects, t_max, t_min=0.001):
+def compute_lighting(point, normal, ray, closest_object, lights, objects, t_max, t_min=0.001):
     intensity_r = 0.0
     intensity_g = 0.0
     intensity_b = 0.0
@@ -81,9 +77,9 @@ def compute_lighting_optimized(point, normal, ray, closest_object, lights, objec
     return (intensity_r, intensity_g, intensity_b)
 
 def trace_ray(O, D, t_min, t_max, objects, lights, background=(255, 255, 255), recursion_depth=2, point=None, normal=None):
-    closest_object, closest_t, closest_color = closest_intersection(O, D, t_min, t_max, objects)
+    closest_object, closest_t = closest_intersection(O, D, t_min, t_max, objects)
 
-    if closest_color is None:
+    if closest_object is None:
         return sky.sample(D)
     
     if point is None:
@@ -91,14 +87,14 @@ def trace_ray(O, D, t_min, t_max, objects, lights, background=(255, 255, 255), r
     if normal is None:
         normal = closest_object.get_normal(point)
     
-    intensity_r, intensity_g, intensity_b = compute_lighting_optimized(
+    intensity_r, intensity_g, intensity_b = compute_lighting(
         point, normal, D, closest_object, lights, objects, t_max, t_min
     )
     
-    c0, c1, c2 = closest_color
-    final_r = int(c0 * intensity_r) if c0 * intensity_r < 255 else 255
-    final_g = int(c1 * intensity_g) if c1 * intensity_g < 255 else 255
-    final_b = int(c2 * intensity_b) if c2 * intensity_b < 255 else 255
+    c0, c1, c2 = closest_object.color
+    final_r = min(255, int(c0 * intensity_r))
+    final_g = min(255, int(c1 * intensity_g))
+    final_b = min(255, int(c2 * intensity_b))
     
     r = closest_object.reflective
     if recursion_depth <= 0 or r <= 1e-3:
@@ -113,9 +109,9 @@ def trace_ray(O, D, t_min, t_max, objects, lights, background=(255, 255, 255), r
     
     one_minus_r = 1 - r
     return (
-        int(final_r * one_minus_r + reflected_color[0] * r),
-        int(final_g * one_minus_r + reflected_color[1] * r),
-        int(final_b * one_minus_r + reflected_color[2] * r)
+        min(255, int(final_r * one_minus_r + reflected_color[0] * r)),
+        min(255, int(final_g * one_minus_r + reflected_color[1] * r)),
+        min(255, int(final_b * one_minus_r + reflected_color[2] * r))
     )
 
 def getReflectedRay(D, N):
@@ -123,90 +119,101 @@ def getReflectedRay(D, N):
     return sub(D, mul(N, 2 * dot_D_N))
 
 
-class RaytracerApp:
-    """Application principale de raytracing avec interface Tkinter."""
+def render_row(args):
+    j, width, camera_get_ray_dir, camera_pos, scene_objects, scene_lights = args
     
-    def __init__(self):
-        self.camera = Camera(canvas_width=1200, canvas_height=800)
-        self.scene = Scene()
+    row_pixels = []
+    t_max = math.inf
+    
+    for i in range(width):
+        D = camera_get_ray_dir(i, j)
+        color = trace_ray(
+            camera_pos, D, 
+            t_min=1.0, t_max=t_max, 
+            objects=scene_objects,
+            lights=scene_lights
+        )
+        row_pixels.append((i, j, color))
+    
+    return row_pixels
 
-        self.root = tk.Tk()
-        self.root.title("Python Raytracing")
-        self.root.protocol("WM_DELETE_WINDOW", self.shutdown)
+
+class RaytracerApp:
+    
+    def __init__(self, scene):
+        self.camera = scene.camera
+        self.scene = scene
 
         self.img = Image.new("RGB", (self.camera.Cw, self.camera.Ch), (255, 255, 255))
         self.px = self.img.load()
-
-        self.tk_img = None
-        self.label = tk.Label(self.root)
-        self.label.pack(expand=True, fill="both")
-
-        self.playing = True
-        self.current_row = 0
-        self.rows_per_tick = 30
         
         self.half_w = self.camera.Cw // 2
         self.half_h = self.camera.Ch // 2
         self.scene_objects = self.scene.objects
         self.scene_lights = self.scene.lights
         self.camera_pos = self.camera.pos
+        
+        self.num_processes = cpu_count()
+        self.pool = Pool(processes=self.num_processes)
+        print(f"Utilisation de {self.num_processes} coeurs")
+        
+    def render_animation(self):
+        frames = []
+    
+        for frame in range(self.scene.animation_steps):
+            print(f"Rendu de la frame {frame + 1}/{self.scene.animation_steps}...")
+        
+            self.scene.update_frame(frame)
+        
+            self.scene_objects = self.scene.objects
+        
+            self.render()
+        
+            frames.append(self.img.copy())
+    
+        save_gif(self, frames)
 
-        self.update_tk_image()
-        self.root.after(0, self.render_tick)
-
-    def update_tk_image(self):
-        """Convertir l'image Pillow -> Tkinter."""
-        self.tk_img = ImageTk.PhotoImage(self.img)
-        self.label.configure(image=self.tk_img)
-
-    def render_tick(self):
-        if not self.playing:
-            return
-
-        y0 = self.current_row
-        y1 = min(self.camera.Ch, y0 + self.rows_per_tick)
-
-        half_w = self.half_w
-        half_h = self.half_h
-        canvas_to_viewport = self.camera.canvas_to_viewport
-        camera_pos = self.camera_pos
-        scene_objects = self.scene_objects
-        scene_lights = self.scene_lights
-
-        for j in range(y0, y1):
-            y = half_h - j
-            for i in range(self.camera.Cw):
-                x = i - half_w
-
-                D = canvas_to_viewport(x, y)
-                D = normalize(D)
-                color = trace_ray(
-                    camera_pos, D, 
-                    t_min=1.0, t_max=math.inf, 
-                    objects=scene_objects,
-                    lights=scene_lights
-                )
+    def render(self):
+        print("Début du rendu...")
+        
+        # Il faut passer les arguments de cette manière pour le multiprocessing (C'est python faut pas chercher à comprendre)
+        row_args = []
+        for j in range(self.camera.Ch):
+            row_args.append((
+                j,
+                self.camera.Cw,
+                self.camera.get_ray_direction,
+                self.camera_pos,
+                self.scene_objects,
+                self.scene_lights
+            ))
+        
+        results = self.pool.map(render_row, row_args)
+        
+        for row_pixels in results:
+            for i, j, color in row_pixels:
                 self.px[i, j] = color
+        
+        print("Rendu terminé !")
 
-        self.current_row = y1
-        self.update_tk_image()
-
-        if self.current_row < self.camera.Ch:
-            self.root.after(1, self.render_tick)
-
-    def restart(self):
-        """Recommence le rendu depuis le début."""
-        self.img.paste((255, 255, 255), (0, 0, self.camera.Cw, self.camera.Ch))
-        self.current_row = 0
-        self.update_tk_image()
-        self.root.after(0, self.render_tick)
-
-    def shutdown(self):
-        """Arrête proprement l'application."""
-        self.playing = False
-        self.root.destroy()
+    def save(self):
+        """Sauvegarde l'image dans ./out/[date].jpg"""
+        os.makedirs("out", exist_ok=True)
+        
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        filename = f"out/{timestamp}.jpg"
+        
+        self.img.save(filename, "JPEG", quality=95)
+        print(f"Image sauvegardée: {filename}")
+        
+        return filename
 
     def run(self):
-        """Lance la boucle principale."""
-        self.root.mainloop()
+        """Lance le rendu et sauvegarde l'image."""
+        try:
+            self.render()
+            self.save()
+        finally:
+            self.pool.close()
+            self.pool.join()
 

@@ -1,3 +1,5 @@
+from utils.maths import normalize
+
 class Camera:
     
     def __init__(self, canvas_width=600, canvas_height=400):
@@ -18,3 +20,14 @@ class Camera:
             y * self.vh_ch_ratio,
             self.d
         )
+    
+    def get_ray_direction(self, i, j):
+        
+        half_w = self.Cw // 2
+        half_h = self.Ch // 2
+        
+        x = i - half_w
+        y = half_h - j
+        
+        D = self.canvas_to_viewport(x, y)
+        return normalize(D)

@@ -34,3 +34,14 @@ class AbstractObject(ABC):
             Vecteur normal (x, y, z)
         """
         return NotImplementedError("get_normal must be implemented in subclasses")
+    
+    @abstractmethod
+    def get_position(self):
+        """
+        Retourne la position de l'objet dans l'espace.
+        Doit être implémenté dans les sous-classes si applicable.
+        
+        Returns:
+            Position de l'objet (x, y, z)
+        """
+        raise NotImplementedError("get_position must be implemented in subclasses if applicable")
