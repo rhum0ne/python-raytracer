@@ -9,7 +9,7 @@ class Camera:
         self.Vw = 5.0
         self.Vh = 3.5
         self.d = 1.0 
-        self.pos = (0.0, 0.5, 0.0)
+        self.pos = (0.0, 0.5, -5.0)
         
         self.vw_cw_ratio = self.Vw / self.Cw
         self.vh_ch_ratio = self.Vh / self.Ch

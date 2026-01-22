@@ -7,6 +7,7 @@ from lights.DirLight import DirLight
 from lights.AmbientLight import AmbientLight
 from animations.Scaling import Scaling
 from animations.LinearMove import LinearMove
+from animations.RotationAroundPoint import RotationAroundPoint
 from utils._sceneKeys import *
 
 class SceneParser:
@@ -66,13 +67,14 @@ class SceneParser:
             self.parse_animations(sphere, s)
         return s
     
-    def parse_plane(self, plane: dict) -> Sphere:
+    def parse_plane(self, plane: dict) -> Plane:
         x, y, z = plane[PLANES_POINT][PLANES_POINT_X], plane[PLANES_POINT][PLANES_POINT_Y], plane[PLANES_POINT][PLANES_POINT_Z]
         normal = (plane[PLANES_NORMAL][PLANES_NORMAL_X], plane[PLANES_NORMAL][PLANES_NORMAL_Y], plane[PLANES_NORMAL][PLANES_NORMAL_Z])
         r, g, b = plane[PLANES_COLOR][PLANES_COLOR_R],plane[PLANES_COLOR][PLANES_COLOR_G], plane[PLANES_COLOR][PLANES_COLOR_B]
         reflective = plane[PLANES_REFLECTIVE]
+        texture = plane[PLANES_TEXTURE] if PLANES_TEXTURE in plane else None
         
-        p = Plane((x, y, z), normal, (r, g, b), reflective)
+        p = Plane((x, y, z), normal, (r, g, b), reflective, texture=texture)
         return p
     
     def parse_cube(self, cube: dict) -> Cube:
@@ -81,8 +83,9 @@ class SceneParser:
         r, g, b = cube[CUBES_COLOR][CUBES_COLOR_R],cube[CUBES_COLOR][CUBES_COLOR_G], cube[CUBES_COLOR][CUBES_COLOR_B]
         specular = cube[CUBES_SPECULAR]
         reflective = cube[CUBES_REFLECTIVE]
+        texture = cube[CUBES_TEXTURE] if CUBES_TEXTURE in cube else None
         
-        c = Cube((x, y, z), radius, (r, g, b), specular, reflective)
+        c = Cube((x, y, z), radius, (r, g, b), specular, reflective, texture=texture)
         if len(cube[ANIMATIONS]) != 0:
             self.parse_animations(cube, c)
         return c
@@ -111,3 +114,12 @@ class SceneParser:
                 case "linear":
                     target = (anim[ANIMATIONS_LINEAR_TARGET][ANIMATIONS_LINEAR_X], anim[ANIMATIONS_LINEAR_TARGET][ANIMATIONS_LINEAR_Y], anim[ANIMATIONS_LINEAR_TARGET][ANIMATIONS_LINEAR_Z])
                     self.scene.add_animation(LinearMove(self.scene, object, target, steps))
+                case "rotation":
+                    axis = (anim[ANIMATIONS_ROTATION_AXIS][ANIMATIONS_ROTATION_AXIS_X], 
+                            anim[ANIMATIONS_ROTATION_AXIS][ANIMATIONS_ROTATION_AXIS_Y], 
+                            anim[ANIMATIONS_ROTATION_AXIS][ANIMATIONS_ROTATION_AXIS_Z])
+                    angle = anim[ANIMATIONS_ROTATION_ANGLE]
+                    point = (anim[ANIMATIONS_ROTATION_POINT][ANIMATIONS_ROTATION_POINT_X], 
+                             anim[ANIMATIONS_ROTATION_POINT][ANIMATIONS_ROTATION_POINT_Y],
+                             anim[ANIMATIONS_ROTATION_POINT][ANIMATIONS_ROTATION_POINT_Z])
+                    self.scene.add_animation(RotationAroundPoint(self.scene, object, axis, angle, steps, point))
