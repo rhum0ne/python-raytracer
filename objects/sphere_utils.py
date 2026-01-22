@@ -22,6 +22,9 @@ class Sphere(AbstractObject):
     
     def get_position(self):
         return self.center
+    
+    def get_size(self):
+        return self.radius
 
 #O est le point de départ du rayon
 #D est la direction du rayon

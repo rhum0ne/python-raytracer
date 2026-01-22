@@ -66,3 +66,6 @@ class Cube(AbstractObject):
         
     def get_position(self):
         return self.center
+    
+    def get_size(self):
+        return self.length

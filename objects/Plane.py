@@ -30,3 +30,6 @@ class Plane(AbstractObject):
 
     def get_position(self):
         return self.point
+    
+    def get_size(self):
+        return None

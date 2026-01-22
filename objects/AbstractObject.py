@@ -45,3 +45,9 @@ class AbstractObject(ABC):
             Position de l'objet (x, y, z)
         """
         raise NotImplementedError("get_position must be implemented in subclasses if applicable")
+
+    @abstractmethod
+    def get_size(self):
+        """Return the size of the current object. The radius if it's a sphere, the length if it's a cube, and none if it's a plane.
+        """
+        raise NotImplementedError("get_size must be implemented in subclasses")

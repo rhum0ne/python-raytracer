@@ -8,7 +8,7 @@ from lights.DirLight import DirLight
 from lights.AmbientLight import AmbientLight
 from objects.Plane import Plane
 from core.camera import Camera
-from animations.SphereScaling import SphereScaling
+from animations.Scaling import Scaling
 from animations.LinearMove import LinearMove
 
 class Scene:
@@ -19,7 +19,7 @@ class Scene:
         self.lights = []
         
         self.camera = Camera(canvas_width=1200, canvas_height=800)
-        self.animation_steps = 60
+        self.animation_steps = 1
         
         self.animations = []
         

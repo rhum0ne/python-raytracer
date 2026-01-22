@@ -5,7 +5,7 @@ from objects.Plane import Plane
 from lights.PointLight import PointLight
 from lights.DirLight import DirLight
 from lights.AmbientLight import AmbientLight
-from animations.SphereScaling import SphereScaling
+from animations.Scaling import Scaling
 from animations.LinearMove import LinearMove
 from utils._sceneKeys import *
 
@@ -105,9 +105,9 @@ class SceneParser:
         for anim in object_dict[ANIMATIONS]:
             steps = anim[ANIMATIONS_STEPS]
             match anim[ANIMATIONS_TYPE]:
-                case "sphere_scale":
+                case "scale":
                     size = anim[ANIMATIONS_SIZE]
-                    self.scene.add_animation(SphereScaling(self.scene, object, size, steps))
+                    self.scene.add_animation(Scaling(self.scene, object, size, steps))
                 case "linear":
                     target = (anim[ANIMATIONS_LINEAR_TARGET][ANIMATIONS_LINEAR_X], anim[ANIMATIONS_LINEAR_TARGET][ANIMATIONS_LINEAR_Y], anim[ANIMATIONS_LINEAR_TARGET][ANIMATIONS_LINEAR_Z])
                     self.scene.add_animation(LinearMove(self.scene, object, target, steps))

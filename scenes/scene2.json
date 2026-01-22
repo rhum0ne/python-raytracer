@@ -94,6 +94,11 @@
               "z": 0
             },
             "steps": 60
+          },
+          {
+            "type": "scale",
+            "size": 3,
+            "steps": 60
           }
         ]
       }
