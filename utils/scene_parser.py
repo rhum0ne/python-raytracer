@@ -1,5 +1,6 @@
 from typing import List, Tuple
 from objects.Cube import Cube
+from objects.Rectangle import Rectangle
 from objects.sphere_utils import Sphere
 from objects.Plane import Plane
 from lights.PointLight import PointLight
@@ -24,6 +25,7 @@ class SceneParser:
         spheres: List[dict] = jsonfile[OBJECTS][SPHERES]
         planes: List[dict] = jsonfile[OBJECTS][PLANES]
         cubes: List[dict] = jsonfile[OBJECTS][CUBES]
+        rectangles: List[dict] = jsonfile[OBJECTS][RECTANGLES]
         
         point_lights: List[dict] = jsonfile[LIGHTS][POINTS]
         directional_lights: List[dict] = jsonfile[LIGHTS][DIRECTIONALS]
@@ -37,6 +39,10 @@ class SceneParser:
             for plane in planes:
                 p: Plane = self.parse_plane(plane)
                 self.scene.add_object(p)
+        if len(rectangles) != 0:
+            for rectangle in rectangles:
+                r: Rectangle = self.parse_rectangle(rectangle)
+                self.scene.add_object(r)
         if len(cubes) != 0:
             for cube in cubes:
                 c: Cube = self.parse_cube(cube)
@@ -76,6 +82,21 @@ class SceneParser:
         
         p = Plane((x, y, z), normal, (r, g, b), reflective, texture=texture)
         return p
+    
+    def parse_rectangle(self, rectangle: dict) -> Rectangle:
+        x, y, z = rectangle[RECTANGLES_POINT][RECTANGLES_POINT_X], rectangle[RECTANGLES_POINT][RECTANGLES_POINT_Y], rectangle[RECTANGLES_POINT][RECTANGLES_POINT_Z]
+        length = rectangle[RECTANGLES_LENGTH]
+        width = rectangle[RECTANGLES_WIDTH]
+        height = rectangle[RECTANGLES_HEIGHT]
+        r, g, b = rectangle[RECTANGLES_COLOR][RECTANGLES_COLOR_R],rectangle[RECTANGLES_COLOR][RECTANGLES_COLOR_G], rectangle[RECTANGLES_COLOR][RECTANGLES_COLOR_B]
+        specular = rectangle[RECTANGLES_SPECULAR]
+        reflective = rectangle[RECTANGLES_REFLECTIVE]
+        texture = rectangle[RECTANGLES_TEXTURE] if RECTANGLES_TEXTURE in rectangle else None
+        
+        rec = Rectangle((x, y, z), length, width, height, (r, g, b), specular, reflective, texture=texture)
+        if len(rectangle[ANIMATIONS]) != 0:
+            self.parse_animations(rectangle, rec)
+        return rec
     
     def parse_cube(self, cube: dict) -> Cube:
         x, y, z = cube[CUBES_POINT][CUBES_POINT_X], cube[CUBES_POINT][CUBES_POINT_Y], cube[CUBES_POINT][CUBES_POINT_Z]

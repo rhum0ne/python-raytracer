@@ -91,15 +91,20 @@ class Rectangle(AbstractObject):
         cx, cy, cz = self.center
         hl = self.half_length
         hw = self.half_width
+        hh = self.half_height
         if abs(n[0]) == 1:
-            u = (z - (cz - hw)) / (2 * hw)
-            v = (y - (cy - hl)) / (2 * hl)
+            u = (z - (cz - hl)) / (2 * hl)
+            v = (y - (cy - hh)) / (2 * hh)
         elif abs(n[1]) == 1:
-            u = (x - (cx - hl)) / (2 * hl)
-            v = (z - (cz - hw)) / (2 * hw)
+            u = (x - (cx - hw)) / (2 * hw)
+            v = (z - (cz - hl)) / (2 * hl)
         else:
-            u = (x - (cx - hl)) / (2 * hl)
-            v = (y - (cy - hw)) / (2 * hw)
+            u = (x - (cx - hw)) / (2 * hw)
+            v = (y - (cy - hh)) / (2 * hh)
+            
+        if(u > 1): u -= (int(u))
+        if(v > 1): v -= (int(v))
+        
         return u, v
 
     def get_normal(self, point):
