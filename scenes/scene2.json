@@ -73,19 +73,29 @@
     "cubes": [
       {
         "point": {
-          "x": -2.0,
-          "y": 0.0,
+          "x": -4.0,
+          "y": 1,
           "z": 4.0
         },
-        "length": 1.5,
+        "length": 2,
         "color": {
-          "r": 230,
-          "g": 230,
-          "b": 230
+          "r": 255,
+          "g": 255,
+          "b": 255
         },
         "specular": 200,
-        "reflective": 0.4,
-        "animations": []
+        "reflective": 0,
+        "animations": [
+          {
+            "type": "linear",
+            "target": {
+              "x": 1,
+              "y": 1,
+              "z": 0
+            },
+            "steps": 60
+          }
+        ]
       }
     ]
   },

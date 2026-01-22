@@ -5,11 +5,14 @@ from objects.Plane import Plane
 from lights.PointLight import PointLight
 from lights.DirLight import DirLight
 from lights.AmbientLight import AmbientLight
+from animations.SphereScaling import SphereScaling
+from animations.LinearMove import LinearMove
 from utils._sceneKeys import *
 
 class SceneParser:
     def __init__(self, scene):
-        self.scene = scene
+        from core.scene import Scene
+        self.scene: Scene = scene
         
     def parse_scene(self, jsonfile):
         """Parse the scene described in the json file parameter.
@@ -59,9 +62,8 @@ class SceneParser:
         reflective = sphere[SPHERES_REFLECTIVE]
         
         s = Sphere((x, y, z), radius, (r, g, b), specular, reflective)
-        if len(sphere[SPHERES_ANIMATIONS]) != 0:
-            # create animations for s
-            pass
+        if len(sphere[ANIMATIONS]) != 0:
+            self.parse_animations(sphere, s)
         return s
     
     def parse_plane(self, plane: dict) -> Sphere:
@@ -81,9 +83,8 @@ class SceneParser:
         reflective = cube[CUBES_REFLECTIVE]
         
         c = Cube((x, y, z), radius, (r, g, b), specular, reflective)
-        if len(cube[CUBES_ANIMATIONS]) != 0:
-            # create animations for s
-            pass
+        if len(cube[ANIMATIONS]) != 0:
+            self.parse_animations(cube, c)
         return c
     
     def parse_point_light(self, light: dict) -> PointLight:
@@ -99,3 +100,14 @@ class SceneParser:
     def parse_ambient_light(self, light: dict) -> AmbientLight:
         r, g, b = light[AMBIENTS_INTENSITY][AMBIENTS_INTENSITY_R],light[AMBIENTS_INTENSITY][AMBIENTS_INTENSITY_G], light[AMBIENTS_INTENSITY][AMBIENTS_INTENSITY_B]
         return AmbientLight((r, g, b))
+    
+    def parse_animations(self, object_dict: dict, object) :
+        for anim in object_dict[ANIMATIONS]:
+            steps = anim[ANIMATIONS_STEPS]
+            match anim[ANIMATIONS_TYPE]:
+                case "sphere_scale":
+                    size = anim[ANIMATIONS_SIZE]
+                    self.scene.add_animation(SphereScaling(self.scene, object, size, steps))
+                case "linear":
+                    target = (anim[ANIMATIONS_LINEAR_TARGET][ANIMATIONS_LINEAR_X], anim[ANIMATIONS_LINEAR_TARGET][ANIMATIONS_LINEAR_Y], anim[ANIMATIONS_LINEAR_TARGET][ANIMATIONS_LINEAR_Z])
+                    self.scene.add_animation(LinearMove(self.scene, object, target, steps))

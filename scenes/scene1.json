@@ -15,7 +15,13 @@
         },
         "specular": 500,
         "reflective": 0.2,
-        "animations": []
+        "animations": [
+          {
+            "type": "sphere_scale",
+            "size": 0.5,
+            "steps": 60
+          }
+        ]
       },
       {
         "center": {
@@ -31,7 +37,17 @@
         },
         "specular": 500,
         "reflective": 0.3,
-        "animations": []
+        "animations": [
+          {
+            "type": "linear",
+            "target": {
+              "x": 1,
+              "y": 1,
+              "z": 0
+            },
+            "steps": 60
+          }
+        ]
       },
       {
         "center": {

@@ -13,21 +13,15 @@ from animations.LinearMove import LinearMove
 
 class Scene:
     def __init__(self):
-        # red_sphere = Sphere(center=(-1, -1, 3), radius=1, color=(255, 0, 0), specular=500, reflective=0.2)
-        # blue_sphere = Sphere(center=(1, 0, 4), radius=1, color=(0, 0, 255), specular=500, reflective=0.3)
-        
         self.scene_parser = SceneParser(self)
         self.objects = []
 
         self.lights = []
         
         self.camera = Camera(canvas_width=1200, canvas_height=800)
-        self.animation_steps = 1
+        self.animation_steps = 60
         
-        self.animations = [
-            # SphereScaling(self, red_sphere, 0.5, 60),
-            # LinearMove(self, blue_sphere, (1, 1, 0), 60)
-        ]
+        self.animations = []
         
         
     def update_frame(self, step):
