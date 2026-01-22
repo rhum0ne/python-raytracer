@@ -70,7 +70,24 @@
         "reflective": 0.1
       }
     ],
-    "cubes": []
+    "cubes": [
+      {
+        "point": {
+          "x": -2.0,
+          "y": 0.0,
+          "z": 4.0
+        },
+        "length": 1.5,
+        "color": {
+          "r": 230,
+          "g": 230,
+          "b": 230
+        },
+        "specular": 200,
+        "reflective": 0.4,
+        "animations": []
+      }
+    ]
   },
   "lights": {
     "points": [
