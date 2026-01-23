@@ -71,6 +71,8 @@ class SceneParser:
         s = Sphere((x, y, z), radius, (r, g, b), specular, reflective)
         if len(sphere[ANIMATIONS]) != 0:
             self.parse_animations(sphere, s)
+            
+        print("Added Sphere: \n\tCenter :", (x, y, z), "\n\tRadius :", radius, "\n\tColor :", (r, g, b), "\n\tSpecular :", specular, "\n\tReflective :", reflective)
         return s
     
     def parse_plane(self, plane: dict) -> Plane:
@@ -79,6 +81,8 @@ class SceneParser:
         r, g, b = plane[PLANES_COLOR][PLANES_COLOR_R],plane[PLANES_COLOR][PLANES_COLOR_G], plane[PLANES_COLOR][PLANES_COLOR_B]
         reflective = plane[PLANES_REFLECTIVE]
         texture = plane[PLANES_TEXTURE] if PLANES_TEXTURE in plane else None
+        
+        print("Added Plane: \n\tPoint :", (x, y, z), "\n\tNormal :", normal, "\n\tColor :", (r, g, b), "\n\tReflective :", reflective, "\n\tTexture :", texture)
         
         p = Plane((x, y, z), normal, (r, g, b), reflective, texture=texture)
         return p
@@ -114,15 +118,19 @@ class SceneParser:
     def parse_point_light(self, light: dict) -> PointLight:
         x, y, z = light[POINTS_POSITION][POINTS_POSITION_X], light[POINTS_POSITION][POINTS_POSITION_Y], light[POINTS_POSITION][POINTS_POSITION_Z]
         r, g, b = light[POINTS_INTENSITY][POINTS_INTENSITY_R],light[POINTS_INTENSITY][POINTS_INTENSITY_G], light[POINTS_INTENSITY][POINTS_INTENSITY_B]
+        
+        print("Added Point Light: \n\tPosition :", (x, y, z), "\n\tIntensity :", (r, g, b))
         return PointLight((x, y, z), (r, g, b))
     
     def parse_directional_light(self, light: dict) -> DirLight:
         x, y, z = light[DIRECTIONALS_DIRECTION][DIRECTIONALS_DIRECTION_X], light[DIRECTIONALS_DIRECTION][DIRECTIONALS_DIRECTION_Y], light[DIRECTIONALS_DIRECTION][DIRECTIONALS_DIRECTION_Z]
         r, g, b = light[DIRECTIONALS_INTENSITY][DIRECTIONALS_INTENSITY_R],light[DIRECTIONALS_INTENSITY][DIRECTIONALS_INTENSITY_G], light[DIRECTIONALS_INTENSITY][DIRECTIONALS_INTENSITY_B]
+        print("Added Directional Light: \n\tDirection :", (x, y, z), "\n\tIntensity :", (r, g, b))
         return DirLight((x, y, z), (r, g, b))
     
     def parse_ambient_light(self, light: dict) -> AmbientLight:
         r, g, b = light[AMBIENTS_INTENSITY][AMBIENTS_INTENSITY_R],light[AMBIENTS_INTENSITY][AMBIENTS_INTENSITY_G], light[AMBIENTS_INTENSITY][AMBIENTS_INTENSITY_B]
+        print("Added Ambient Light: \n\tIntensity :", (r, g, b))
         return AmbientLight((r, g, b))
     
     def parse_animations(self, object_dict: dict, object) :

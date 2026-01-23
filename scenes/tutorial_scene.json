@@ -10,7 +10,7 @@
         "animations": []
       },
       {
-        "center": { "x": 2.0, "y": 0.0, "z": 4.0 },
+        "center": { "x": 1.0, "y": 0.0, "z": 4.0 },
         "radius": 1.0,
         "color": { "r": 0, "g": 0, "b": 255 },
         "specular": 500,
@@ -40,21 +40,22 @@
   },
   "lights": {
     "points": [
-      {
-        "position": { "x": 2.0, "y": 1.0, "z": 2.0 },
-        "intensity": { "r": 0.7, "g": 0.7, "b": 0.7 }
-      }
     ],
     "directionals": [
       {
-        "direction": { "x": 1.0, "y": -1.0, "z": 0.0 },
+        "direction": { "x": 0.0, "y": -1.0, "z": 0.0 },
         "intensity": { "r": 0.5, "g": 0.5, "b": 0.5 }
       }
     ],
     "ambients": [
       {
-        "intensity": { "r": 0.3, "g": 0.3, "b": 0.3 }
+        "intensity": { "r": 0.2, "g": 0.2, "b": 0.2 }
       }
     ]
-  }
+  },
+  "camera": {
+    "canvas_width": 1200,
+    "canvas_height": 800
+  },
+  "animation_steps": 1
 }
