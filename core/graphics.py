@@ -178,7 +178,8 @@ class RaytracerApp:
     def render(self):
         print("Début du rendu...")
         
-        # Il faut passer les arguments de cette manière pour le multiprocessing (C'est python faut pas chercher à comprendre)
+        # Il faut passer les arguments de cette manière pour le multiprocessing 
+        # (C'est python faut pas chercher à comprendre)
         row_args = []
         for j in range(self.camera.Ch):
             row_args.append((
@@ -197,9 +198,27 @@ class RaytracerApp:
                 self.px[i, j] = color
         
         print("Rendu terminé !")
+        
+    def saveppm(self):
+        """Sauvegarde l'image dans ./out/[date].ppm, Fais par IA."""
+        os.makedirs("out", exist_ok=True)
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        filename = f"out/{timestamp}.ppm"
+        
+        with open(filename, 'w') as f:
+            f.write(f"P3\n{self.camera.Cw} {self.camera.Ch}\n255\n")
+            
+            for j in reversed(range(self.camera.Ch)):
+                for i in reversed(range(self.camera.Cw)):
+                    r, g, b = self.px[i, j]
+                    f.write(f"{r} {g} {b} ")
+                f.write("\n")
+                
+        print(f"Image sauvegardée: {filename}")
+        return filename
 
     def save(self):
-        """Sauvegarde l'image dans ./out/[date].jpg"""
+        """Sauvegarde l'image dans ./out/[date].jpg, Fais par IA."""
         os.makedirs("out", exist_ok=True)
         
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -211,10 +230,9 @@ class RaytracerApp:
         return filename
 
     def run(self):
-        """Lance le rendu et sauvegarde l'image."""
         try:
             self.render()
-            self.save()
+            self.saveppm()
         finally:
             self.pool.close()
             self.pool.join()

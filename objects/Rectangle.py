@@ -50,6 +50,8 @@ class Rectangle(AbstractObject):
         super().__init__(color, specular, reflective, texture)
         self.center = point
         
+        #Ne pas texturer des rectangles, j'arrive pas a faire marcher ça
+        # C'est un problème de coordonnées on confond la hauteur, la largeur et la longueur selon les cas
         self.length = length
         self.width = width
         self.height = height
@@ -74,8 +76,6 @@ class Rectangle(AbstractObject):
             img = self.texture
             w, h = img.size
 
-            u = u % 1.0
-            v = v % 1.0
             px = int(u * (w - 1))
             py = int((1 - v) * (h - 1))
             color = img.getpixel((px, py))

@@ -4,7 +4,7 @@ from core.scene import Scene
 
 if __name__ == "__main__":
     scene = Scene()
-    scene.loadScene("scene1.json")
+    scene.loadScene("solar_system.json")
     app = RaytracerApp(scene=scene)
     if scene.animation_steps == 1:
         app.run()

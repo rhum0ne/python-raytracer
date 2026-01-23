@@ -22,15 +22,34 @@ class SceneParser:
         Args:
             jsonfile (json file): the scene json file to parse
         """
+        
+        if 'animation_steps' in jsonfile:
+            self.scene.animation_steps = int(jsonfile['animation_steps'])
+        
+        if 'camera' in jsonfile:
+            cam = jsonfile['camera']
+            if 'position' in cam:
+                pos = cam['position']
+                self.scene.camera.pos = (
+                    float(pos.get('x', 0.0)),
+                    float(pos.get('y', 0.5)),
+                    float(pos.get('z', 0.0))
+                )
+            if 'yaw' in cam:
+                self.scene.camera.yaw = float(cam['yaw'])
+            if 'pitch' in cam:
+                self.scene.camera.pitch = float(cam['pitch'])
+            self.scene.camera.update_dir()
+
         spheres: List[dict] = jsonfile[OBJECTS][SPHERES]
         planes: List[dict] = jsonfile[OBJECTS][PLANES]
         cubes: List[dict] = jsonfile[OBJECTS][CUBES]
         rectangles: List[dict] = jsonfile[OBJECTS][RECTANGLES]
-        
+
         point_lights: List[dict] = jsonfile[LIGHTS][POINTS]
         directional_lights: List[dict] = jsonfile[LIGHTS][DIRECTIONALS]
         ambient_lights: List[dict] = jsonfile[LIGHTS][AMBIENTS]
-        
+
         if len(spheres) != 0:
             for sphere in spheres:
                 s: Sphere = self.parse_sphere(sphere)
@@ -47,7 +66,7 @@ class SceneParser:
             for cube in cubes:
                 c: Cube = self.parse_cube(cube)
                 self.scene.add_object(c)
-        
+
         if len(point_lights) != 0:
             for p_light in point_lights:
                 pl: PointLight = self.parse_point_light(p_light)

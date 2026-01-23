@@ -1,11 +1,12 @@
 from lights.AbstractLight import AbstractLight
 from utils.lightning_utils import calcLighting
+from utils.maths import mul
 
 class DirLight(AbstractLight):
     
     def __init__(self, direction, intensity):
         super().__init__(intensity)
-        self.direction = direction 
+        self.direction = mul(direction, -1)
         
         print("Created Directional Light with direction:", self.direction, "and intensity:", self.intensity)
     

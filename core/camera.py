@@ -15,33 +15,38 @@ class Camera:
         self.pitch = 0.0
         self.roll = 0.0
         
-        self.pos = (0.0, 0.5, -5.0)
+        self.pos = (0.0, 0.5, 0.0)
         self.update_dir()
         
         self.vw_cw_ratio = self.Vw / self.Cw
         self.vh_ch_ratio = self.Vh / self.Ch
         
     def update_dir(self):
+        # Clamp pitch to avoid gimbal lock
+        self.pitch = max(-89.0, min(89.0, self.pitch))
+        # Direction vector
         self.dir = (
             math.cos(math.radians(self.pitch)) * math.sin(math.radians(self.yaw)),
             math.sin(math.radians(self.pitch)),
             math.cos(math.radians(self.pitch)) * math.cos(math.radians(self.yaw))
         )
-        
         self.dir = normalize(self.dir)
-        
-        self.right = normalize(( # right doit être perpendiculaire à dir et à (0,1,0) (le haut du monde)
-            self.dir[2], 
-            0,
-            -self.dir[0]
+
+        # Up vector (global up)
+        world_up = (0.0, 1.0, 0.0)
+        # Right = dir x world_up
+        self.right = normalize((
+            self.dir[1]*world_up[2] - self.dir[2]*world_up[1],
+            self.dir[2]*world_up[0] - self.dir[0]*world_up[2],
+            self.dir[0]*world_up[1] - self.dir[1]*world_up[0]
         ))
-        
+        # Up = right x dir
         self.up = normalize((
-            self.right[1] * self.dir[2] - self.right[2] * self.dir[1],
-            self.right[2] * self.dir[0] - self.right[0] * self.dir[2],
-            self.right[0] * self.dir[1] - self.right[1] * self.dir[0]
+            self.right[1]*self.dir[2] - self.right[2]*self.dir[1],
+            self.right[2]*self.dir[0] - self.right[0]*self.dir[2],
+            self.right[0]*self.dir[1] - self.right[1]*self.dir[0]
         ))
-        #Bon ca verra pour le roll si on a le temps
+        # Roll non géré
 
     def canvas_to_viewport(self, x, y):
         return (

@@ -31,7 +31,8 @@
         "point": { "x": 0.0, "y": -1.5, "z": 0.0 },
         "normal": { "x": 0.0, "y": 1.0, "z": 0.0 },
         "color": { "r": 255, "g": 255, "b": 255 },
-        "reflective": 0.08
+        "reflective": 0.08,
+        "specular": 0
       }
     ],
     "cubes": [],

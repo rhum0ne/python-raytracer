@@ -1,0 +1,139 @@
+{
+  "objects": {
+    "spheres": [
+      {
+        "center": { "x": -3.5, "y": 1.2, "z": 8.0 },
+        "radius": 1.2,
+        "color": { "r": 40, "g": 170, "b": 60 },
+        "specular": 30,
+        "reflective": 0.15,
+        "animations": []
+      },
+      {
+        "center": { "x": -3.5, "y": 2.6, "z": 8.0 },
+        "radius": 0.9,
+        "color": { "r": 30, "g": 140, "b": 50 },
+        "specular": 20,
+        "reflective": 0.12,
+        "animations": []
+      },
+      {
+        "center": { "x": 3.2, "y": 1.4, "z": 9.0 },
+        "radius": 1.4,
+        "color": { "r": 50, "g": 185, "b": 70 },
+        "specular": 40,
+        "reflective": 0.18,
+        "animations": []
+      },
+      {
+        "center": { "x": 0.0, "y": 3.3, "z": 7.0 },
+        "radius": 0.25,
+        "color": { "r": 230, "g": 230, "b": 230 },
+        "specular": 200,
+        "reflective": 0.05,
+        "animations": [
+          {
+            "type": "linear",
+            "target": { "x": 0.0, "y": 1.2, "z": 0.0 },
+            "steps": 90
+          }
+        ]
+      }
+    ],
+    "planes": [
+      {
+        "texture": "grass_top.png",
+        "point": { "x": 0.0, "y": -1.5, "z": 0.0 },
+        "normal": { "x": 0.0, "y": 1.0, "z": 0.0 },
+        "color": { "r": 255, "g": 255, "b": 255 },
+        "reflective": 0.05,
+        "specular": 0
+      }
+    ],
+    "cubes": [
+      { "texture": "planks.png", "point": { "x": 0.0, "y": -1.0, "z": 7.0 }, "length": 4, "color": { "r": 255, "g": 255, "b": 255 }, "specular": 120, "reflective": 0.05, "animations": [] },
+
+      { "texture": "planks.png", "point": { "x": -1.5, "y": 0.0, "z": 5.5 }, "length": 1, "color": { "r": 255, "g": 255, "b": 255 }, "specular": 150, "reflective": 0.03, "animations": [] },
+      { "texture": "planks.png", "point": { "x": -0.5, "y": 0.0, "z": 5.5 }, "length": 1, "color": { "r": 255, "g": 255, "b": 255 }, "specular": 150, "reflective": 0.03, "animations": [] },
+      { "texture": "planks.png", "point": { "x": 0.5, "y": 0.0, "z": 5.5 }, "length": 1, "color": { "r": 255, "g": 255, "b": 255 }, "specular": 150, "reflective": 0.03, "animations": [] },
+      { "texture": "planks.png", "point": { "x": 1.5, "y": 0.0, "z": 5.5 }, "length": 1, "color": { "r": 255, "g": 255, "b": 255 }, "specular": 150, "reflective": 0.03, "animations": [] },
+
+      { "texture": "planks.png", "point": { "x": -1.5, "y": 0.0, "z": 8.5 }, "length": 1, "color": { "r": 255, "g": 255, "b": 255 }, "specular": 150, "reflective": 0.03, "animations": [] },
+      { "texture": "planks.png", "point": { "x": -0.5, "y": 0.0, "z": 8.5 }, "length": 1, "color": { "r": 255, "g": 255, "b": 255 }, "specular": 150, "reflective": 0.03, "animations": [] },
+      { "texture": "planks.png", "point": { "x": 0.5, "y": 0.0, "z": 8.5 }, "length": 1, "color": { "r": 255, "g": 255, "b": 255 }, "specular": 150, "reflective": 0.03, "animations": [] },
+      { "texture": "planks.png", "point": { "x": 1.5, "y": 0.0, "z": 8.5 }, "length": 1, "color": { "r": 255, "g": 255, "b": 255 }, "specular": 150, "reflective": 0.03, "animations": [] },
+
+      { "texture": "planks.png", "point": { "x": -2.0, "y": 0.0, "z": 6.5 }, "length": 1, "color": { "r": 255, "g": 255, "b": 255 }, "specular": 150, "reflective": 0.03, "animations": [] },
+      { "texture": "planks.png", "point": { "x": -2.0, "y": 0.0, "z": 7.5 }, "length": 1, "color": { "r": 255, "g": 255, "b": 255 }, "specular": 150, "reflective": 0.03, "animations": [] },
+      { "texture": "planks.png", "point": { "x": 2.0, "y": 0.0, "z": 6.5 }, "length": 1, "color": { "r": 255, "g": 255, "b": 255 }, "specular": 150, "reflective": 0.03, "animations": [] },
+      { "texture": "planks.png", "point": { "x": 2.0, "y": 0.0, "z": 7.5 }, "length": 1, "color": { "r": 255, "g": 255, "b": 255 }, "specular": 150, "reflective": 0.03, "animations": [] },
+
+      { "texture": "planks.png", "point": { "x": -1.5, "y": 1.0, "z": 5.5 }, "length": 1, "color": { "r": 255, "g": 255, "b": 255 }, "specular": 150, "reflective": 0.03, "animations": [] },
+      { "texture": "planks.png", "point": { "x": -0.5, "y": 1.0, "z": 5.5 }, "length": 1, "color": { "r": 255, "g": 255, "b": 255 }, "specular": 150, "reflective": 0.03, "animations": [] },
+      { "texture": "planks.png", "point": { "x": 0.5, "y": 1.0, "z": 5.5 }, "length": 1, "color": { "r": 255, "g": 255, "b": 255 }, "specular": 150, "reflective": 0.03, "animations": [] },
+      { "texture": "planks.png", "point": { "x": 1.5, "y": 1.0, "z": 5.5 }, "length": 1, "color": { "r": 255, "g": 255, "b": 255 }, "specular": 150, "reflective": 0.03, "animations": [] },
+
+      { "texture": "planks.png", "point": { "x": -1.5, "y": 1.0, "z": 8.5 }, "length": 1, "color": { "r": 255, "g": 255, "b": 255 }, "specular": 150, "reflective": 0.03, "animations": [] },
+      { "texture": "planks.png", "point": { "x": -0.5, "y": 1.0, "z": 8.5 }, "length": 1, "color": { "r": 255, "g": 255, "b": 255 }, "specular": 150, "reflective": 0.03, "animations": [] },
+      { "texture": "planks.png", "point": { "x": 0.5, "y": 1.0, "z": 8.5 }, "length": 1, "color": { "r": 255, "g": 255, "b": 255 }, "specular": 150, "reflective": 0.03, "animations": [] },
+      { "texture": "planks.png", "point": { "x": 1.5, "y": 1.0, "z": 8.5 }, "length": 1, "color": { "r": 255, "g": 255, "b": 255 }, "specular": 150, "reflective": 0.03, "animations": [] },
+
+      { "texture": "planks.png", "point": { "x": -2.0, "y": 1.0, "z": 6.5 }, "length": 1, "color": { "r": 255, "g": 255, "b": 255 }, "specular": 150, "reflective": 0.03, "animations": [] },
+      { "texture": "planks.png", "point": { "x": -2.0, "y": 1.0, "z": 7.5 }, "length": 1, "color": { "r": 255, "g": 255, "b": 255 }, "specular": 150, "reflective": 0.03, "animations": [] },
+      { "texture": "planks.png", "point": { "x": 2.0, "y": 1.0, "z": 6.5 }, "length": 1, "color": { "r": 255, "g": 255, "b": 255 }, "specular": 150, "reflective": 0.03, "animations": [] },
+      { "texture": "planks.png", "point": { "x": 2.0, "y": 1.0, "z": 7.5 }, "length": 1, "color": { "r": 255, "g": 255, "b": 255 }, "specular": 150, "reflective": 0.03, "animations": [] },
+
+      { "texture": "stone_brick.png", "point": { "x": 0.0, "y": 2.0, "z": 7.0 }, "length": 3, "color": { "r": 255, "g": 255, "b": 255 }, "specular": 80, "reflective": 0.08, "animations": [] },
+      { "texture": "stone_brick.png", "point": { "x": 0.0, "y": 2.5, "z": 7.0 }, "length": 2, "color": { "r": 255, "g": 255, "b": 255 }, "specular": 80, "reflective": 0.08, "animations": [] },
+
+      { "texture": "stone_brick.png", "point": { "x": 1.5, "y": 2.4, "z": 6.2 }, "length": 1, "color": { "r": 255, "g": 255, "b": 255 }, "specular": 70, "reflective": 0.06, "animations": [] },
+      { "texture": "stone_brick.png", "point": { "x": 1.5, "y": 3.4, "z": 6.2 }, "length": 1, "color": { "r": 255, "g": 255, "b": 255 }, "specular": 70, "reflective": 0.06, "animations": [] },
+
+      { "texture": "stone_brick.png", "point": { "x": 0.0, "y": -1.25, "z": 5.0 }, "length": 1, "color": { "r": 255, "g": 255, "b": 255 }, "specular": 60, "reflective": 0.02, "animations": [] },
+      { "texture": "stone_brick.png", "point": { "x": 0.0, "y": -1.25, "z": 4.0 }, "length": 1, "color": { "r": 255, "g": 255, "b": 255 }, "specular": 60, "reflective": 0.02, "animations": [] },
+      { "texture": "stone_brick.png", "point": { "x": 0.0, "y": -1.25, "z": 3.0 }, "length": 1, "color": { "r": 255, "g": 255, "b": 255 }, "specular": 60, "reflective": 0.02, "animations": [] },
+
+      { "texture": "planks.png", "point": { "x": -3.5, "y": -0.5, "z": 8.0 }, "length": 1, "color": { "r": 255, "g": 255, "b": 255 }, "specular": 60, "reflective": 0.02, "animations": [] },
+      { "texture": "planks.png", "point": { "x": -3.5, "y": 0.5, "z": 8.0 }, "length": 1, "color": { "r": 255, "g": 255, "b": 255 }, "specular": 60, "reflective": 0.02, "animations": [] },
+
+      { "texture": "planks.png", "point": { "x": 3.2, "y": -0.5, "z": 9.0 }, "length": 1, "color": { "r": 255, "g": 255, "b": 255 }, "specular": 60, "reflective": 0.02, "animations": [] },
+      { "texture": "planks.png", "point": { "x": 3.2, "y": 0.5, "z": 9.0 }, "length": 1, "color": { "r": 255, "g": 255, "b": 255 }, "specular": 60, "reflective": 0.02, "animations": [] },
+
+      {
+        "texture": "grass_top.png",
+        "point": { "x": 4.5, "y": -1.1, "z": 6.0 },
+        "length": 1,
+        "color": { "r": 255, "g": 255, "b": 255 },
+        "specular": 40,
+        "reflective": 0.02,
+        "animations": [
+          { "type": "scale", "size": 2, "steps": 80 }
+        ]
+      }
+    ],
+    "rectangles": []
+  },
+  "lights": {
+    "points": [
+      {
+        "position": { "x": 0.0, "y": 0.6, "z": 5.0 },
+        "intensity": { "r": 0.85, "g": 0.70, "b": 0.55 }
+      },
+      {
+        "position": { "x": 1.8, "y": 2.9, "z": 6.2 },
+        "intensity": { "r": 0.25, "g": 0.25, "b": 0.25 }
+      }
+    ],
+    "directionals": [
+      {
+        "direction": { "x": -1.0, "y": -1.2, "z": 0.6 },
+        "intensity": { "r": 0.35, "g": 0.35, "b": 0.38 }
+      }
+    ],
+    "ambients": [
+      {
+        "intensity": { "r": 0.12, "g": 0.12, "b": 0.14 }
+      }
+    ]
+  }
+}

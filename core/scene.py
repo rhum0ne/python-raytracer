@@ -19,8 +19,8 @@ class Scene:
         self.lights = []
         
         self.camera = Camera(canvas_width=1200, canvas_height=800)
-        self.animation_steps = 1
         
+        self.animation_steps = 1
         self.animations = []
         
         
@@ -80,7 +80,8 @@ class Scene:
         self.animations = [
             LinearMove(self, blue_sphere, (1, 1, 0), 60)
         ] 
-
+        
+        self.animation_steps = 1
     
     def add_object(self, obj):
         self.objects.append(obj)
