@@ -28,6 +28,7 @@ PLANES_COLOR_R = "r"
 PLANES_COLOR_G = "g"
 PLANES_COLOR_B = "b"
 PLANES_REFLECTIVE = "reflective"
+PLANES_SPECULAR = "specular"
 PLANES_TEXTURE = "texture"
 
 CUBES = "cubes"

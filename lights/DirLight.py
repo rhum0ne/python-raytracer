@@ -6,6 +6,8 @@ class DirLight(AbstractLight):
     def __init__(self, direction, intensity):
         super().__init__(intensity)
         self.direction = direction 
+        
+        print("Created Directional Light with direction:", self.direction, "and intensity:", self.intensity)
     
     def calcIntensityAtPoint(self, point, normal, ray, specular=-1):
         return calcLighting(

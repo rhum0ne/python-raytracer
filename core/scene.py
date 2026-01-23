@@ -34,6 +34,9 @@ class Scene:
         Args:
             filename (str): the name of the json file
         """
+        if(filename == None):
+            self.loadDefaultScene()
+            return
         
         if(not filename.endswith(".json")):
             filename += ".json"
@@ -52,8 +55,33 @@ class Scene:
             raise FileNotFoundError("The specified file/path doesn't exists")
         
         self.scene_parser.parse_scene(scene)
-        print(f"Scene noaded \n\tobjects : {self.objects}\n\tlights : {self.lights}\n\tanimations : {self.animations}")
+        #print(f"Scene noaded \n\tobjects : {self.objects}\n\tlights : {self.lights}\n\tanimations : {self.animations}")
 
+    def loadDefaultScene(self):
+        red_sphere = Sphere(center=(-1, -1, 3), radius=1, color=(255, 0, 0), specular=500, reflective=0.2)
+        blue_sphere = Sphere(center=(1, 0, 4), radius=1, color=(0, 0, 255), specular=500, reflective=0.3)
+        
+        self.objects = [
+            red_sphere,
+            blue_sphere,
+            Sphere(center=(-2, 0, 4), radius=1, color=(0, 255, 0), specular=10, reflective=0.4),
+            Plane(point=(0.0, -1.5, 0.0), normal=(0.0, 1.0, 0.0), color=(255, 255, 0), reflective=0.1)
+        ]
+
+        self.lights = [
+            PointLight(position=(2.0, 1.0, 2.0), intensity=(0.7, 0.7, 0.7)),
+            DirLight(direction=(-1.0, -1.0, 1.0), intensity=(0.2, 0.2, 0.2)),
+            AmbientLight(intensity=(0.2, 0.2, 0.2))
+        ]
+        
+        self.camera = Camera(canvas_width=1200, canvas_height=800)
+        self.animation_steps = 1
+        
+        self.animations = [
+            LinearMove(self, blue_sphere, (1, 1, 0), 60)
+        ] 
+
+    
     def add_object(self, obj):
         self.objects.append(obj)
 

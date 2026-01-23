@@ -15,13 +15,7 @@
         },
         "specular": 500,
         "reflective": 0.2,
-        "animations": [
-          {
-            "type": "scale",
-            "size": 0.5,
-            "steps": 60
-          }
-        ]
+        "animations": []
       },
       {
         "center": {
@@ -37,17 +31,7 @@
         },
         "specular": 500,
         "reflective": 0.3,
-        "animations": [
-          {
-            "type": "linear",
-            "target": {
-              "x": 1,
-              "y": 1,
-              "z": 0
-            },
-            "steps": 60
-          }
-        ]
+        "animations": []
       },
       {
         "center": {
@@ -83,32 +67,51 @@
           "g": 255,
           "b": 0
         },
-        "reflective": 0.1
+        "reflective": 0.1,
+        "specular": 0
       }
     ],
     "cubes": [],
     "rectangles": []
   },
-  "lights": {
-    "points": [
-      {
-        "position": {
-          "x": 2.0,
-          "y": 1.0,
-          "z": 2.0
-        },
-        "intensity": {
-          "r": 0.7,
-          "g": 0.7,
-          "b": 0.7
+  "lights":
+    {
+      "points": [
+        {
+          "position": {
+            "x": 2.0,
+            "y": 1.0,
+            "z": 2.0
+          },
+          "intensity": {
+            "r": 0.7,
+            "g": 0.7,
+            "b": 0.7
+          }
         }
-      }
-    ],
-    "directionals": [
-      
-    ],
-    "ambients": [
-      
-    ]
-  }
+      ],
+      "directionals": [
+        {
+          "direction": {
+            "x": -1.0,
+            "y": -1.0,
+            "z": 1.0
+          },
+          "intensity": {
+            "r": 0.2,
+            "g": 0.2,
+            "b": 0.2
+          }
+        }
+      ],
+      "ambients": [
+        {
+          "intensity": {
+            "r": 0.2,
+            "g": 0.2,
+            "b": 0.2
+          }
+        }
+      ]
+    }
 }

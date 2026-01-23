@@ -7,10 +7,12 @@ from utils.maths import dot
 class Plane(AbstractObject):
     """Plan défini par un point et une normale."""
     
-    def __init__(self, point, normal, color, specular=-1, reflective=0.0, texture=None):
+    def __init__(self, point, normal, color, specular=-1, reflective=0, texture=None):
         super().__init__(color, specular, reflective, texture)
         self.point = point
         self.normal = normal
+        
+        print("Created Plane at point:", self.point, "with normal:", self.normal, "color:", self.color, "reflective:", self.reflective, "texture:", "Yes" if self.texture else "No")
     
     def intersect(self, origin, direction):
         denominator = dot(self.normal, direction)
