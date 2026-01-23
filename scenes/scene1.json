@@ -86,7 +86,8 @@
         "reflective": 0.1
       }
     ],
-    "cubes": []
+    "cubes": [],
+    "rectangles": []
   },
   "lights": {
     "points": [
@@ -104,27 +105,10 @@
       }
     ],
     "directionals": [
-      {
-        "direction": {
-          "x": -1.0,
-          "y": -1.0,
-          "z": 1.0
-        },
-        "intensity": {
-          "r": 0.2,
-          "g": 0.2,
-          "b": 0.2
-        }
-      }
+      
     ],
     "ambients": [
-      {
-        "intensity": {
-          "r": 0.2,
-          "g": 0.2,
-          "b": 0.2
-        }
-      }
+      
     ]
   }
 }
