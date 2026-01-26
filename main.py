@@ -1,6 +1,13 @@
 ﻿from core.graphics import RaytracerApp
+from core.scene import Scene
 
 
 if __name__ == "__main__":
-    app = RaytracerApp()
-    app.run()
+    scene = Scene()
+    scene.loadScene("solar_system.json")
+    app = RaytracerApp(scene=scene)
+    if scene.animation_steps == 1:
+        app.run()
+    
+    else:
+        app.render_animation()

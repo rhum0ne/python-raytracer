@@ -11,7 +11,7 @@ class Sphere(AbstractObject):
         self.specular = specular
 
     def intersect(self, origin, direction):
-        return intersect_ray_sphere(origin, direction, self)
+        return intersect_ray_sphere(origin, direction, self), self.color
     
     def get_normal(self, point):
         N = sub(point, self.center)
@@ -19,6 +19,16 @@ class Sphere(AbstractObject):
         if len_sq < 1e-10:
             return (0, 1, 0)
         return (N[0] / (len_sq ** 0.5), N[1] / (len_sq ** 0.5), N[2] / (len_sq ** 0.5))
+    
+    def get_position(self):
+        return self.center
+
+    def set_positions(self, positions):
+        # Pour une sphère, on attend un seul point (le centre)
+        self.center = positions
+    
+    def get_size(self):
+        return self.radius
 
 #O est le point de départ du rayon
 #D est la direction du rayon

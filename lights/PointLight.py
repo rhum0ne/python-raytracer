@@ -6,6 +6,8 @@ class PointLight(AbstractLight):
     def __init__(self, position, intensity):
         super().__init__(intensity, is_point_light=True)
         self.position = position
+        
+        print("Created Point Light at position:", self.position, "with intensity:", self.intensity)
 
     def calcIntensityAtPoint(self, point, normal, ray, specular=-1):
         L = sub(self.position, point)
